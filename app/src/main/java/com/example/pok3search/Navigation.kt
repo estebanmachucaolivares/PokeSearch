@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
-
+import com.example.pok3search.ui.theme.pokeRed
 
 
 @Composable
@@ -15,7 +15,7 @@ fun MainScreen(){
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Red)
+            .background(pokeRed)
     ){
         Text(text = "Pantalla 1")
     }
@@ -26,7 +26,7 @@ fun SearchScreen(){
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Red)
+            .background(pokeRed)
     ){
         Text(text = "Pantalla 2")
     }
@@ -37,7 +37,7 @@ fun Pokemondetail(){
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Gray)
+            .background(pokeRed)
     ){
         Text(text = "Pantalla 3")
     }

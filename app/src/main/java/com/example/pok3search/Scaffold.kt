@@ -1,6 +1,7 @@
 package com.example.pok3search
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
@@ -11,35 +12,54 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.pok3search.ui.theme.iconUnselected
 import com.example.pok3search.ui.theme.pokeRed
 import com.example.pok3search.ui.theme.pokeRedSelected
 
-@Preview(showBackground = true)
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold(){
+fun MainScaffold(navigationController: NavHostController) {
+
+    var selectedIndex by remember { mutableStateOf(0) }
+
     Scaffold(
-        bottomBar = {MainBottomBar()}
+        bottomBar = {
+            MainBottomBar(navigationController, selectedIndex) { newIndex ->
+                selectedIndex = newIndex
+            }
+        }
     ) {
-        val navigationController = rememberNavController()
-        NavHost(navController = navigationController, startDestination = "MainScreen"){
-            composable("MainScreen") { MainScreen()}
-            composable("SearchScreen") { SearchScreen()}
-            composable("Pokemondetail") { Pokemondetail()}
+
+        NavHost(navController = navigationController, startDestination = "MainScreen") {
+            composable("MainScreen") {
+                selectedIndex = 0
+                MainScreen()
+            }
+            composable("Pokemondetail") {
+                selectedIndex = 1
+                Pokemondetail()
+            }
+            composable("SearchScreen") {
+                selectedIndex = 2
+                SearchScreen()
+            }
         }
     }
 }
 
-
-
 @Composable
-fun MainBottomBar(){
-    var index by rememberSaveable{ mutableStateOf(0) }
+fun MainBottomBar(
+    navigationController: NavHostController,
+    selectedIndex: Int,
+    onItemSelected: (Int) -> Unit
+) {
     val mainBottomBarColor = NavigationBarItemDefaults.colors(
         selectedIconColor = Color.White,
         unselectedIconColor = iconUnselected,
@@ -48,27 +68,45 @@ fun MainBottomBar(){
         unselectedTextColor = iconUnselected
     )
 
-    NavigationBar(containerColor = pokeRed) {
+    NavigationBar(containerColor = Color.Red) {
         NavigationBarItem(
-            icon = {  Icon(Icons.Filled.List, contentDescription = "prueba") },
+            icon = { Icon(Icons.Filled.List, contentDescription = "Pokemones") },
             label = { Text("Pokemones") },
-            selected = index == 0,
-            onClick = {index = 0},
+            selected = selectedIndex == 0,
+            onClick = {
+                if (selectedIndex != 0) {
+                    onItemSelected(0)
+                    navigationController.navigate("MainScreen")
+                }
+            },
             colors = mainBottomBarColor
         )
         NavigationBarItem(
-            icon = { Icon(painter =  painterResource(id =R.drawable.pokeball) , contentDescription = "prueba") },
-
-            selected = index == 1,
-            onClick = {index = 1},
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.pokeball),
+                    contentDescription = "Pokemondetail"
+                )
+            },
+            selected = selectedIndex == 1,
+            onClick = {
+                if (selectedIndex != 1) {
+                    onItemSelected(1)
+                    navigationController.navigate("Pokemondetail")
+                }
+            },
             colors = mainBottomBarColor
         )
-
         NavigationBarItem(
-            icon = { Icon(Icons.Filled.Search, contentDescription = "prueba") },
+            icon = { Icon(Icons.Filled.Search, contentDescription = "Buscar") },
             label = { Text("Buscar") },
-            selected = index == 2,
-            onClick = {index = 2},
+            selected = selectedIndex == 2,
+            onClick = {
+                if (selectedIndex != 2) {
+                    onItemSelected(2)
+                    navigationController.navigate("SearchScreen")
+                }
+            },
             colors = mainBottomBarColor
         )
     }
