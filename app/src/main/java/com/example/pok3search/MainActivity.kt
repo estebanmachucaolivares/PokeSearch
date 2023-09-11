@@ -26,8 +26,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navigationController = rememberNavController()
-                    MainScaffold(navigationController)
+
+                    MainScaffold()
                 }
             }
         }

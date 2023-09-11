@@ -21,98 +21,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.pok3search.ui.theme.iconUnselected
-import com.example.pok3search.ui.theme.navigationBar
-import com.example.pok3search.ui.theme.pokeRed
+import com.example.pok3search.ui.theme.*
+
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold(navigationController: NavHostController) {
+fun MainScaffold() {
 
-    var selectedIndex by remember { mutableStateOf(0) }
+    val navigationController = rememberNavController()
 
     Scaffold(
-        bottomBar = {
-            MainBottomBar(navigationController, selectedIndex) { newIndex ->
-                selectedIndex = newIndex
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ },
+                    contentColor = Color.White,
+                containerColor = detailBackground
+                ) {
+                Icon(imageVector = Icons.Filled.Search, contentDescription = "")
             }
-        }
+        },
+        containerColor = mainBackgroundColor
     ) {
-        Column(Modifier.padding( bottom = 80.dp)) {
-            NavHost(navController = navigationController, startDestination = "MainScreen") {
-                composable("MainScreen") {
-                    selectedIndex = 0
-                    MainScreen()
-                }
-                composable("Pokemondetail") {
-                    selectedIndex = 1
-                    Pokemondetail()
-                }
-                composable("SearchScreen") {
-                    selectedIndex = 2
-                    SearchScreen()
-                }
+        NavHost(navController = navigationController, startDestination = "MainScreen") {
+            composable("MainScreen") {
+                MainScreen()
             }
+            composable("Pokemondetail") {
+                PokemonDetail()
+            }
+
         }
     }
 }
 
-@Composable
-fun MainBottomBar(
-    navigationController: NavHostController,
-    selectedIndex: Int,
-    onItemSelected: (Int) -> Unit
-) {
-    val mainBottomBarColor = NavigationBarItemDefaults.colors(
-        selectedIconColor = Color.White,
-        unselectedIconColor = iconUnselected,
-        selectedTextColor = Color.White,
-        indicatorColor = pokeRed,
-        unselectedTextColor = iconUnselected
-    )
-
-    NavigationBar(containerColor = navigationBar) {
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.List, contentDescription = "Pokemones") },
-            label = { Text("Pokemones") },
-            selected = selectedIndex == 0,
-            onClick = {
-                if (selectedIndex != 0) {
-                    onItemSelected(0)
-                    navigationController.navigate("MainScreen")
-                }
-            },
-            colors = mainBottomBarColor
-        )
-        NavigationBarItem(
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.pokeball),
-                    contentDescription = "Pokemondetail"
-                )
-            },
-            selected = selectedIndex == 1,
-            onClick = {
-                if (selectedIndex != 1) {
-                    onItemSelected(1)
-                    navigationController.navigate("Pokemondetail")
-                }
-            },
-            colors = mainBottomBarColor
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Search, contentDescription = "Buscar") },
-            label = { Text("Buscar") },
-            selected = selectedIndex == 2,
-            onClick = {
-                if (selectedIndex != 2) {
-                    onItemSelected(2)
-                    navigationController.navigate("SearchScreen")
-                }
-            },
-            colors = mainBottomBarColor
-        )
-    }
-}
+//navigationController.navigate("MainScreen")
+//navigationController.navigate("Pokemondetail")
