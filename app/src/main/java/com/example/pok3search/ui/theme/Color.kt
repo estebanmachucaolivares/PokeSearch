@@ -16,6 +16,7 @@ val pokeRed = Color(0xFFF12345)
 
 val detailBackground = Color(0xFFC9215A)
 val mainBackgroundColor = Color(0xFFF1EDED)
+val searchBackgroundColor = Color(0xFFD3D3D3)
 
 val iconUnselected = Color(0xFFC2C0C0)
 
