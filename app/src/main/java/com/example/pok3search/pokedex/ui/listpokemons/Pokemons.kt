@@ -21,6 +21,8 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
             .background(mainBackgroundColor)
     ){
 
+        listPokemonViewModel.getAllPokemons()
+
         Column() {
             Box(
                 modifier = Modifier
