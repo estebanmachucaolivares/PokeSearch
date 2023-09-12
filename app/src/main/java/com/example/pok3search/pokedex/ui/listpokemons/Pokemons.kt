@@ -10,10 +10,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.mainBackgroundColor
 
 @Composable
-fun MainScreen(){
+fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
     Column(
         modifier = Modifier
             .fillMaxSize()

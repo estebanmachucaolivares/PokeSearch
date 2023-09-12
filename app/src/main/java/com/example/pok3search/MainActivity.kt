@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -36,12 +37,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
+import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.Pok3SearchTheme
 import com.example.pok3search.ui.theme.detailBackground
 import com.example.pok3search.ui.theme.mainBackgroundColor
 import com.example.pok3search.ui.theme.searchBackgroundColor
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val detailPokemonViewModel: DetailPokemonViewModel by viewModels()
+    private val listPokemonViewModel: ListPokemonViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -51,8 +60,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    MainScaffold()
+                    MainScaffold(listPokemonViewModel,detailPokemonViewModel)
                 }
             }
         }
@@ -63,7 +71,7 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold() {
+fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewModel: DetailPokemonViewModel) {
 
     val navigationController = rememberNavController()
 
@@ -80,10 +88,10 @@ fun MainScaffold() {
     ) {
         NavHost(navController = navigationController, startDestination = "MainScreen") {
             composable("MainScreen") {
-                MainScreen()
+                MainScreen(listPokemonViewModel)
             }
             composable("Pokemondetail") {
-                PokemonDetail()
+                PokemonDetail(detailPokemonViewModel)
             }
 
         }
