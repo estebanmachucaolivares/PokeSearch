@@ -11,8 +11,18 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,6 +30,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.mainBackgroundColor
+import com.example.pok3search.ui.theme.shadowBack
 import com.example.pok3search.ui.theme.textItemColor
 
 @Composable
@@ -84,22 +95,39 @@ fun pokemonItem(index: Int,pokemon: Pokemon){
     val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$pokemonNumber.png")
 
 
+    val radiusDp = 100.dp
+    val density = LocalDensity.current.density
+    val radiusPx = with(LocalDensity.current) { radiusDp.toPx() / density }
 
     Column( horizontalAlignment = Alignment.CenterHorizontally) {
         Box {
+
             Image(
-                painter = painterResource(id = R.drawable.pokemon_base),
+                painter = painterResource(id = R.drawable.pokemon_back),
                 contentDescription = null,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter),
+                    .align(Alignment.Center),
                 contentScale = ContentScale.Fit
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .size(80.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(shadowBack,Color.Transparent),
+                            center = Offset(110f, 110f), // El centro del degradado
+                            radius = radiusPx, // El radio del degradado en píxeles
+                            tileMode = TileMode.Clamp
+                        )
+                    ).align(Alignment.Center)
             )
 
             Image(
                 painter = painter,
                 contentDescription = null,
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
+                    .align(Alignment.Center)
                     .padding(bottom = 5.dp)
                     .size(60.dp),
                 contentScale = ContentScale.Fit
@@ -107,7 +135,18 @@ fun pokemonItem(index: Int,pokemon: Pokemon){
 
 
         }
-        Text(text = "#$pokemonNumber ${pokemon.name}", color = textItemColor, fontSize = 12.sp)
+        val pokemonText = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append("#$pokemonNumber ")
+            }
+            append(pokemon.name)
+        }
+
+        Text(
+            text = pokemonText,
+            color = textItemColor,
+            fontSize = 12.sp
+        )
     }
 
 }
@@ -124,4 +163,65 @@ fun pokemonGridList(pokemonList: List<Pokemon>) {
                 pokemonItem(index, pokemon)
             }
         })
+
+
+}
+
+@Preview
+@Composable
+fun pokemonView(){
+    val radiusDp = 100.dp
+    val density = LocalDensity.current.density
+    val radiusPx = with(LocalDensity.current) { radiusDp.toPx() / density }
+
+    Column( horizontalAlignment = Alignment.CenterHorizontally) {
+        Box {
+            Image(
+                painter = painterResource(id = R.drawable.pokemon_back),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Fit
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .size(80.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(shadowBack,Color.Transparent),
+                            center = Offset(110f, 110f), // El centro del degradado
+                            radius = radiusPx, // El radio del degradado en píxeles
+                            tileMode = TileMode.Clamp
+                        )
+                    ).align(Alignment.Center)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.pokemon_test_view),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(bottom = 5.dp)
+                    .size(60.dp)
+                    ,
+                contentScale = ContentScale.Fit
+            )
+
+
+
+        }
+        val pokemonText = buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append("#1 ")
+            }
+            append("Bulbasaur")
+        }
+
+        Text(
+            text = pokemonText,
+            color = textItemColor,
+            fontSize = 12.sp
+        )
+    }
+
 }

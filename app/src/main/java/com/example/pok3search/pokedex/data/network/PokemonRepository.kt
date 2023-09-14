@@ -10,4 +10,9 @@ class PokemonRepository @Inject constructor(private val api:PokemonService)  {
         val res = api.getAllPokemons()
         return res.map { it.toDomain() }
     }
+
+    suspend fun getAllPokemonWithRegion():List<Pokemon>{
+       return api.getAllPokemonWithRegion().map { it.toDomain() }
+    }
+
 }

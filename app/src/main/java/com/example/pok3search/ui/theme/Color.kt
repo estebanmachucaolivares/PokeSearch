@@ -18,3 +18,5 @@ val statusbarColor = Color(0xFFFC4850)
 
 val textItemColor = Color(0xFF686868)
 
+val shadowBack = Color(0xFFBFBEBE)
+
