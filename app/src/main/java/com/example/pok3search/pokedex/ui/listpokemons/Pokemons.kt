@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,19 +42,34 @@ import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
 import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.*
+import kotlinx.coroutines.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
 @Composable
 fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
 
+    var showFab by remember { mutableStateOf(false) }
+
+    val listState = rememberLazyGridState()
+
+    val regionPositions = remember { mutableStateMapOf<Int, Int>() }
+
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ },
-                contentColor = Color.White,
-                containerColor = detailBackground
-            ) {
-                Icon(imageVector = Icons.Filled.Search, contentDescription = "")
+            if(showFab){
+                FloatingActionButton(onClick = {
+                    GlobalScope.launch{
+                        withContext(Dispatchers.Main){
+                            listState.scrollToItem(0)
+                        }
+                    }
+                },
+                    contentColor = Color.White,
+                    containerColor = detailBackground
+                ) {
+                    Icon(imageVector = Icons.Filled.KeyboardArrowUp, contentDescription = "")
+                }
             }
         },
         containerColor = Color.Transparent
@@ -73,27 +91,49 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
                 onClearSearch = { searchText = "" }
             )
 
-            RegionChips(pokemonList)
+            RegionChips(pokemonList) { newPosition ->
+                GlobalScope.launch {
+                    withContext(Dispatchers.Main) {
+                        listState.scrollToItem(newPosition)
+                    }
+                }
+            }
 
-            PokemonGridList(pokemonList)
+            PokemonGridList(pokemonList, listState){
+                Log.d("scroll","show fab $it")
+                showFab = it
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegionChips(regionList:List<PokemonGroupByRegion>) {
+fun RegionChips(regionList:List<PokemonGroupByRegion>, onRegionClick: (Int) -> Unit) {
+
+    var selectedPosition by remember { mutableStateOf(0) }
+
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(regionList) { region ->
+        itemsIndexed(regionList) { index,region ->
+            val isSelected = index == selectedPosition
             AssistChip(
                 modifier = Modifier.padding(4.dp),
                 label = { Text(text = region.region) },
-                onClick = { /* Maneja el clic en el chip si es necesario */ },
+                onClick = {
+
+                    selectedPosition = index
+                    // Encuentra el índice correcto de la región al hacer clic en el chip
+                    val startIndex = regionList.subList(0, index).sumBy { it.pokemonList.size } + index
+
+                    onRegionClick(startIndex)
+
+                },
                 colors = AssistChipDefaults.assistChipColors(
-                    labelColor = Color.Black
+                    labelColor = if (isSelected) Color.White else Color.Black,
+                    containerColor = if (isSelected) Color.Blue else Color.White
                 )
             )
         }
@@ -164,21 +204,11 @@ fun PokemonItem(index: Int, pokemon: Pokemon){
 }
 
 @Composable
-fun PokemonGridList(pokemonList: List<PokemonGroupByRegion>) {
+fun PokemonGridList(pokemonList: List<PokemonGroupByRegion>,listState:LazyGridState, showFab:(Boolean) -> Unit) {
 
     Log.d("pokemon list agrupada", pokemonList.toString())
 
-
-    // Controla si el FAB debe estar visible
-    var isFabVisible by remember { mutableStateOf(false) }
-
-    // Crea un controlador de desplazamiento para LazyVerticalGrid
-    val scrollState = rememberLazyListState()
-
-
-    val listState = rememberLazyGridState()
-
-    Log.d("scroll","liststate ${listState.firstVisibleItemIndex}")
+    showFab(listState.firstVisibleItemIndex > 2)
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -186,6 +216,9 @@ fun PokemonGridList(pokemonList: List<PokemonGroupByRegion>) {
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         content = {
+
+            var currentIndex = 0
+
             pokemonList.forEach { (region, pokemonInRegion) ->
 
                 header{
@@ -198,8 +231,28 @@ fun PokemonGridList(pokemonList: List<PokemonGroupByRegion>) {
                     )
                 }
 
+
                 // Elementos de Pokémon de la región
                 itemsIndexed(pokemonInRegion) { index, pokemon ->
+
+                    currentIndex++
+
+                    // Verifica si este elemento es el que se debe desplazar
+                    if (currentIndex - 1 == listState.firstVisibleItemIndex) {
+                        // Notifica la nueva posición
+                        val newPosition = currentIndex - 1
+                        // Solo notificamos la nueva posición si la posición cambia
+                        if (newPosition != listState.firstVisibleItemIndex) {
+
+                            GlobalScope.launch{
+                               withContext(Dispatchers.Main){
+                                   listState.scrollToItem(newPosition)
+                               }
+                           }
+
+                        }
+                    }
+
                     PokemonItem(pokemon.id, pokemon)
                 }
             }

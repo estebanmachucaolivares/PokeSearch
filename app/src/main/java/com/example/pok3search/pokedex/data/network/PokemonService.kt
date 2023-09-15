@@ -1,6 +1,5 @@
 package com.example.pok3search.pokedex.data.network
 
-import com.example.pok3search.pokedex.data.network.response.PokemonGroupByRegion
 import com.example.pok3search.pokedex.data.network.response.PokemonListItem
 import com.example.pok3search.pokedex.data.network.response.PokemonWithId
 import com.example.pok3search.pokedex.data.network.response.PokemonWithIdGroupByRegion
