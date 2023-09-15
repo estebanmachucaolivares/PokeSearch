@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pok3search.pokedex.domain.GetAllPokemonUseCase
 import com.example.pok3search.pokedex.domain.GetPokemonWithRegionUsecase
-import com.example.pok3search.pokedex.domain.model.Pokemon
+import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,9 +17,9 @@ class ListPokemonViewModel @Inject constructor(
     private val getPokemonWithRegionUsecase: GetPokemonWithRegionUsecase
 ) : ViewModel() {
 
-    private val _pokemonList = MutableLiveData<List<Pokemon>>()
+    private val _pokemonList = MutableLiveData<List<PokemonGroupByRegion>>()
 
-    val pokemonList:LiveData<List<Pokemon>> = _pokemonList
+    val pokemonList:LiveData<List<PokemonGroupByRegion>> = _pokemonList
 
     fun getAllPokemons(){
         viewModelScope.launch {

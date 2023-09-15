@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -28,10 +29,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
@@ -75,17 +79,34 @@ fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewMod
 
     val navigationController = rememberNavController()
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ },
-                contentColor = Color.White,
-                containerColor = detailBackground
-            ) {
-                Icon(imageVector = Icons.Filled.Search, contentDescription = "")
+    Column(modifier = Modifier.fillMaxSize().background(mainBackgroundColor)){
+        Box(
+            modifier = Modifier
+        ){
+
+            Box(  modifier = Modifier
+                .padding(start = 10.dp, top = 10.dp)
+                .widthIn(max = Dp.Infinity)){
+                Image(
+                    painter = painterResource(id = R.drawable.circle_dex),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopStart),
+                    contentScale = ContentScale.Crop
+                )
             }
-        },
-        containerColor = mainBackgroundColor
-    ) {
+            Box(  modifier = Modifier
+                .widthIn(max = Dp.Infinity)){
+                Image(
+                    painter = painterResource(id = R.drawable.line_top_dex),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopStart),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
+
         NavHost(navController = navigationController, startDestination = "MainScreen") {
             composable("MainScreen") {
                 MainScreen(listPokemonViewModel)
@@ -96,6 +117,7 @@ fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewMod
 
         }
     }
+
 }
 
 @OptIn(ExperimentalComposeUiApi::class)

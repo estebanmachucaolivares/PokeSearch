@@ -15,14 +15,9 @@ interface PokemonClient {
         //@Query("offset") offset: Int
     ): PokemonListResponse
 
-
-    @GET("pokemon-species/")
-    suspend fun getAllPokemonSpecies(): PokemonListResponse
-
-    @GET
-    suspend fun getPokemonSpecies(@Url url: String):PokemonSpecies
+    @GET("generation")
+    suspend fun getAllGenerations(): GenerationListResponse
 
     @GET
-    suspend fun getGenerationByUrl(@Url url: String): GenerationResponse
-
+    suspend fun getGeneration(@Url url: String): GenerationDetail
 }

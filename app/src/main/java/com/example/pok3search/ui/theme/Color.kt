@@ -17,6 +17,7 @@ val searchBackgroundColor = Color(0xFFD3D3D3)
 val statusbarColor = Color(0xFFFC4850)
 
 val textItemColor = Color(0xFF686868)
+val textTitleRegionColor = Color(0xFFE69292)
 
 val shadowBack = Color(0xFFBFBEBE)
 
