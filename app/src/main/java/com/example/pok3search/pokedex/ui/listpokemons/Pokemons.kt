@@ -53,16 +53,15 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
 
     val listState = rememberLazyGridState()
 
-    val regionPositions = remember { mutableStateMapOf<Int, Int>() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         floatingActionButton = {
             if(showFab){
                 FloatingActionButton(onClick = {
-                    GlobalScope.launch{
-                        withContext(Dispatchers.Main){
-                            listState.scrollToItem(0)
-                        }
+                    coroutineScope.launch{
+                        listState.scrollToItem(0)
+                    // listState.animateScrollToItem(0)
                     }
                 },
                     contentColor = Color.White,
@@ -81,30 +80,72 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
 
             listPokemonViewModel.getAllPokemons()
             val pokemonList:List<PokemonGroupByRegion> by listPokemonViewModel.pokemonList.observeAsState(initial = listOf())
+
+            val filteredPokemonList = remember { mutableStateOf(pokemonList) }
+
+            LaunchedEffect(pokemonList) {
+                if(pokemonList.isNotEmpty()){
+                    filteredPokemonList.value = pokemonList
+                }
+            }
+
             var searchText by remember { mutableStateOf("") }
 
             SearchBar(
                 modifier = Modifier.padding(10.dp),
                 searchText = searchText,
-                onSearchTextChanged = { searchText = it },
-                onSearchSubmit = { /* Handle search submit here */ },
-                onClearSearch = { searchText = "" }
+                onSearchTextChanged = {
+                    searchText = it
+                    Log.d("search", it)
+                    filterPokemonList(pokemonList, it, filteredPokemonList)
+                },
+                onSearchSubmit = { Log.d("search", "submit") },
+                onClearSearch = {
+                    searchText = ""
+                    filterPokemonList(pokemonList, "", filteredPokemonList)
+                }
             )
 
             RegionChips(pokemonList) { newPosition ->
-                GlobalScope.launch {
-                    withContext(Dispatchers.Main) {
-                        listState.scrollToItem(newPosition)
-                    }
+                coroutineScope.launch {
+                    listState.scrollToItem(newPosition)
+                    //listState.animateScrollToItem(newPosition) TODO validar index actual y de destino para un maximo de 50 items para animar el scroll
                 }
             }
 
-            PokemonGridList(pokemonList, listState){
-                Log.d("scroll","show fab $it")
+            PokemonGridList(filteredPokemonList, listState){
                 showFab = it
             }
         }
     }
+}
+
+// Función para filtrar la lista pokemonList
+fun filterPokemonList(
+    pokemonList: List<PokemonGroupByRegion>,
+    filterText: String,
+    filteredPokemonList: MutableState<List<PokemonGroupByRegion>>
+) {
+    val lowercaseFilterText = filterText.lowercase()
+
+    val filteredList = if (lowercaseFilterText.isEmpty()) {
+        // Si el campo de búsqueda está vacío, mostrar la lista completa
+        pokemonList
+    } else {
+        // Filtrar por nombre de Pokémon o ID en cada región
+        pokemonList.map { region ->
+            val filteredRegion = region.copy(
+                pokemonList = region.pokemonList.filter { pokemon ->
+                    val nameMatches = pokemon.name.lowercase().contains(lowercaseFilterText)
+                    val idMatches = pokemon.id.toString().contains(lowercaseFilterText)
+                    nameMatches || idMatches
+                }
+            )
+            filteredRegion
+        }
+    }
+
+    filteredPokemonList.value = filteredList
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,8 +173,8 @@ fun RegionChips(regionList:List<PokemonGroupByRegion>, onRegionClick: (Int) -> U
 
                 },
                 colors = AssistChipDefaults.assistChipColors(
-                    labelColor = if (isSelected) Color.White else Color.Black,
-                    containerColor = if (isSelected) Color.Blue else Color.White
+                    labelColor = if (isSelected) Color.White else textItemColor,
+                    containerColor = if (isSelected) detailBackground else Color.Transparent
                 )
             )
         }
@@ -204,7 +245,11 @@ fun PokemonItem(index: Int, pokemon: Pokemon){
 }
 
 @Composable
-fun PokemonGridList(pokemonList: List<PokemonGroupByRegion>,listState:LazyGridState, showFab:(Boolean) -> Unit) {
+fun PokemonGridList(
+    pokemonList: MutableState<List<PokemonGroupByRegion>>,
+    listState: LazyGridState,
+    showFab: (Boolean) -> Unit
+) {
 
     Log.d("pokemon list agrupada", pokemonList.toString())
 
@@ -219,41 +264,42 @@ fun PokemonGridList(pokemonList: List<PokemonGroupByRegion>,listState:LazyGridSt
 
             var currentIndex = 0
 
-            pokemonList.forEach { (region, pokemonInRegion) ->
-
-                header{
-                    Text(
-                        text = region,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        color = textTitleRegionColor,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                }
-
-
-                // Elementos de Pokémon de la región
-                itemsIndexed(pokemonInRegion) { index, pokemon ->
-
-                    currentIndex++
-
-                    // Verifica si este elemento es el que se debe desplazar
-                    if (currentIndex - 1 == listState.firstVisibleItemIndex) {
-                        // Notifica la nueva posición
-                        val newPosition = currentIndex - 1
-                        // Solo notificamos la nueva posición si la posición cambia
-                        if (newPosition != listState.firstVisibleItemIndex) {
-
-                            GlobalScope.launch{
-                               withContext(Dispatchers.Main){
-                                   listState.scrollToItem(newPosition)
-                               }
-                           }
-
-                        }
+            pokemonList.value.forEach { (region, pokemonInRegion) ->
+                if(pokemonInRegion.isNotEmpty()){
+                    // headers de regiones
+                    header{
+                        Text(
+                            text = region,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            color = textTitleRegionColor,
+                            modifier = Modifier.padding(start = 20.dp)
+                        )
                     }
 
-                    PokemonItem(pokemon.id, pokemon)
+                    // Elementos de Pokémon de la región
+                    itemsIndexed(pokemonInRegion) { index, pokemon ->
+
+                        currentIndex++
+
+                        // Verifica si este elemento es el que se debe desplazar
+                        if (currentIndex - 1 == listState.firstVisibleItemIndex) {
+                            // Notifica la nueva posición
+                            val newPosition = currentIndex - 1
+                            // Solo notificamos la nueva posición si la posición cambia
+                            if (newPosition != listState.firstVisibleItemIndex) {
+
+                                GlobalScope.launch{
+                                    withContext(Dispatchers.Main){
+                                        listState.scrollToItem(newPosition)
+                                    }
+                                }
+
+                            }
+                        }
+
+                        PokemonItem(pokemon.id, pokemon)
+                    }
                 }
             }
         },

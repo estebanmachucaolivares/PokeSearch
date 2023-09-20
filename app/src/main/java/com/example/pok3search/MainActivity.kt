@@ -2,6 +2,7 @@ package com.example.pok3search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
@@ -79,7 +82,9 @@ fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewMod
 
     val navigationController = rememberNavController()
 
-    Column(modifier = Modifier.fillMaxSize().background(mainBackgroundColor)){
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(mainBackgroundColor)){
         Box(
             modifier = Modifier
         ){
@@ -132,11 +137,10 @@ fun SearchBar(
 
     var isSearching by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-
     val shape: Shape = RoundedCornerShape(30.dp)
     val focusRequester = remember { FocusRequester() }
-
     val keyboardController = LocalSoftwareKeyboardController.current
+    var isTextFieldFocused by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -144,7 +148,8 @@ fun SearchBar(
             .background(searchBackgroundColor)
             .clickable {
                 focusRequester.requestFocus()
-            }.focusable(true) // Para permitir el enfoque
+            }
+            .focusable(true) // Para permitir el enfoque
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     focusManager.clearFocus()
@@ -184,9 +189,27 @@ fun SearchBar(
                     .weight(1f)
                     .padding(top = 3.dp)
                     .focusRequester(focusRequester)
+                    .onFocusChanged {
+                        isTextFieldFocused = it.isFocused
+                    }
+
             )
 
-            if (isSearching) {
+            if(isTextFieldFocused && searchText.isEmpty()){
+                Icon(
+                    painter = painterResource(id = R.drawable.keyboard_hide),
+                    contentDescription = "Clear",
+                    modifier = Modifier
+                        .clickable {
+                            onClearSearch()
+                            isSearching = false
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                        }
+                    , tint = Color.Black
+
+                )
+            }else if (isSearching) {
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Clear",
