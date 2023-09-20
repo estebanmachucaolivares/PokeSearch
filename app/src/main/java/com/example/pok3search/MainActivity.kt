@@ -117,7 +117,7 @@ fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewMod
                 MainScreen(listPokemonViewModel)
             }
             composable("Pokemondetail") {
-                PokemonDetail(detailPokemonViewModel)
+                PokemonDetail()
             }
 
         }

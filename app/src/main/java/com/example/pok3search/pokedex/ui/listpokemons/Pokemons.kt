@@ -4,17 +4,12 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,11 +27,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import coil.compose.rememberAsyncImagePainter
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
@@ -55,6 +47,8 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
 
     val coroutineScope = rememberCoroutineScope()
 
+    val selectedPosition = remember { mutableStateOf(0) }
+
     Scaffold(
         floatingActionButton = {
             if(showFab){
@@ -63,6 +57,7 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
                         listState.scrollToItem(0)
                     // listState.animateScrollToItem(0)
                     }
+                    selectedPosition.value = 0
                 },
                     contentColor = Color.White,
                     containerColor = detailBackground
@@ -106,7 +101,7 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
                 }
             )
 
-            RegionChips(pokemonList) { newPosition ->
+            RegionChips(pokemonList,selectedPosition) { newPosition ->
                 coroutineScope.launch {
                     listState.scrollToItem(newPosition)
                     //listState.animateScrollToItem(newPosition) TODO validar index actual y de destino para un maximo de 50 items para animar el scroll
@@ -150,22 +145,20 @@ fun filterPokemonList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegionChips(regionList:List<PokemonGroupByRegion>, onRegionClick: (Int) -> Unit) {
-
-    var selectedPosition by remember { mutableStateOf(0) }
+fun RegionChips(regionList:List<PokemonGroupByRegion>,selectedPosition:MutableState<Int>, onRegionClick: (Int) -> Unit) {
 
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         itemsIndexed(regionList) { index,region ->
-            val isSelected = index == selectedPosition
+            val isSelected = index == selectedPosition.value
             AssistChip(
                 modifier = Modifier.padding(4.dp),
                 label = { Text(text = region.region) },
                 onClick = {
 
-                    selectedPosition = index
+                    selectedPosition.value = index
                     // Encuentra el índice correcto de la región al hacer clic en el chip
                     val startIndex = regionList.subList(0, index).sumBy { it.pokemonList.size } + index
 
