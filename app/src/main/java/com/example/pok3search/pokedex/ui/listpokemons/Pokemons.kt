@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.*
@@ -27,8 +28,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
@@ -39,7 +42,7 @@ import kotlinx.coroutines.*
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
 @Composable
-fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
+fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController: NavHostController){
 
     var showFab by remember { mutableStateOf(false) }
 
@@ -73,6 +76,8 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
                 .fillMaxSize()
         ){
 
+
+
             listPokemonViewModel.getAllPokemons()
             val pokemonList:List<PokemonGroupByRegion> by listPokemonViewModel.pokemonList.observeAsState(initial = listOf())
 
@@ -85,6 +90,33 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
             }
 
             var searchText by remember { mutableStateOf("") }
+
+            Box(
+                modifier = Modifier
+            ){
+
+                Box(  modifier = Modifier
+                    .padding(start = 10.dp, top = 10.dp)
+                    .widthIn(max = Dp.Infinity)){
+                    Image(
+                        painter = painterResource(id = R.drawable.circle_dex),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.TopStart),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Box(  modifier = Modifier
+                    .widthIn(max = Dp.Infinity)){
+                    Image(
+                        painter = painterResource(id = R.drawable.line_top_dex),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.TopStart),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            }
 
             SearchBar(
                 modifier = Modifier.padding(10.dp),
@@ -108,7 +140,7 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel){
                 }
             }
 
-            PokemonGridList(filteredPokemonList, listState){
+            PokemonGridList(filteredPokemonList, listState,navigationController){
                 showFab = it
             }
         }
@@ -175,14 +207,16 @@ fun RegionChips(regionList:List<PokemonGroupByRegion>,selectedPosition:MutableSt
 }
 
 @Composable
-fun PokemonItem(index: Int, pokemon: Pokemon){
+fun PokemonItem(index: Int, pokemon: Pokemon, onItemselected: (Pokemon) ->Unit){
     val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$index.png")
 
     val radiusDp = 100.dp
     val density = LocalDensity.current.density
     val radiusPx = with(LocalDensity.current) { radiusDp.toPx() / density }
 
-    Column( horizontalAlignment = Alignment.CenterHorizontally) {
+    Column( horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable {
+        onItemselected(pokemon)
+    }) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
@@ -241,6 +275,7 @@ fun PokemonItem(index: Int, pokemon: Pokemon){
 fun PokemonGridList(
     pokemonList: MutableState<List<PokemonGroupByRegion>>,
     listState: LazyGridState,
+    navigationController: NavHostController,
     showFab: (Boolean) -> Unit
 ) {
 
@@ -291,7 +326,9 @@ fun PokemonGridList(
                             }
                         }
 
-                        PokemonItem(pokemon.id, pokemon)
+                        PokemonItem(pokemon.id, pokemon){
+                            navigationController.navigate("Pokemondetail/${it.id}/${it.name}")
+                        }
                     }
                 }
             }

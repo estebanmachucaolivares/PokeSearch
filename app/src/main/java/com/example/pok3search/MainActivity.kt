@@ -2,7 +2,6 @@ package com.example.pok3search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -18,7 +17,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,13 +39,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
 import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.Pok3SearchTheme
-import com.example.pok3search.ui.theme.detailBackground
 import com.example.pok3search.ui.theme.mainBackgroundColor
 import com.example.pok3search.ui.theme.searchBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,39 +85,21 @@ fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewMod
     Column(modifier = Modifier
         .fillMaxSize()
         .background(mainBackgroundColor)){
-        Box(
-            modifier = Modifier
-        ){
-
-            Box(  modifier = Modifier
-                .padding(start = 10.dp, top = 10.dp)
-                .widthIn(max = Dp.Infinity)){
-                Image(
-                    painter = painterResource(id = R.drawable.circle_dex),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.TopStart),
-                    contentScale = ContentScale.Crop
-                )
-            }
-            Box(  modifier = Modifier
-                .widthIn(max = Dp.Infinity)){
-                Image(
-                    painter = painterResource(id = R.drawable.line_top_dex),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.TopStart),
-                    contentScale = ContentScale.Fit
-                )
-            }
-        }
 
         NavHost(navController = navigationController, startDestination = "MainScreen") {
             composable("MainScreen") {
-                MainScreen(listPokemonViewModel)
+                MainScreen(listPokemonViewModel,navigationController)
             }
-            composable("Pokemondetail") {
-                PokemonDetail()
+            composable(
+                "Pokemondetail/{pokemonId}/{pokemonName}",
+                arguments = listOf(navArgument("pokemonId") {
+                    type = NavType.IntType
+                }, navArgument("pokemonName") {
+                    type = NavType.StringType
+                })
+            ) {
+                val pokemon = Pokemon(id= it.arguments?.getInt("pokemonId") ?: 0, name = it.arguments?.getString("pokemonName") ?: "")
+                PokemonDetail(pokemon,navigationController)
             }
 
         }
