@@ -6,6 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Url
 import retrofit2.Call
+import retrofit2.http.Path
 
 interface PokemonClient {
 
@@ -20,4 +21,7 @@ interface PokemonClient {
 
     @GET
     suspend fun getGeneration(@Url url: String): GenerationDetail
+
+    @GET("pokemon-species/{id}/")
+    suspend fun getPokemonDetails(@Path("id") id: Int):PokemonDescription
 }

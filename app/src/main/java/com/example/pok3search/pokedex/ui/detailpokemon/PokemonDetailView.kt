@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,13 +26,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.pok3search.pokedex.domain.model.Pokemon
+import com.example.pok3search.pokedex.domain.model.PokemonDescription
+import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
 import com.example.pok3search.ui.theme.Primary
 import com.example.pok3search.ui.theme.textItemColor
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PokemonDetail(pokemon: Pokemon, navigationController: NavHostController) {
+fun PokemonDetail(
+     pokemon: Pokemon,
+     navigationController: NavHostController,
+     detailPokemonViewModel: DetailPokemonViewModel
+) {
+
+     detailPokemonViewModel.getPokemonDescription(pokemonId = pokemon.id)
+
+     val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription("",""))
+
      Scaffold(
           topBar = {
                TopBar(pokemon.name,navigationController)
@@ -97,14 +109,13 @@ fun PokemonDetail(pokemon: Pokemon, navigationController: NavHostController) {
                     ) {
                          Column(horizontalAlignment = Alignment.CenterHorizontally) {
                               Text(
-                                   text = "Pokemon Semilla",
+                                   text = pokemonDescription.pokemonType,
                                    Modifier.padding(20.dp),
                                    color = textItemColor,
                                    fontWeight = FontWeight.Bold
                               )
                               Text(
-                                   text = "Una rara semilla le fue plantada en el lomo al nacer.\n" +
-                                           "La planta brota y crece con este Pokémon.",
+                                   text = pokemonDescription.pokemonDescription,
                                    Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
                                    textAlign = TextAlign.Center,
                                    color = Color.Black,

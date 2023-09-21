@@ -50,4 +50,6 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
         }
     }
 
+    suspend fun getPokemonDetails(pokemonId: Int) = pokemonClient.getPokemonDetails(pokemonId)
+
 }

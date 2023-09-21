@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -30,13 +29,11 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
@@ -99,7 +96,7 @@ fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewMod
                 })
             ) {
                 val pokemon = Pokemon(id= it.arguments?.getInt("pokemonId") ?: 0, name = it.arguments?.getString("pokemonName") ?: "")
-                PokemonDetail(pokemon,navigationController)
+                PokemonDetail(pokemon,navigationController,detailPokemonViewModel )
             }
 
         }
