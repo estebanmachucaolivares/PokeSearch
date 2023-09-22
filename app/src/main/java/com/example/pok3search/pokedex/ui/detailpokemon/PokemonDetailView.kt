@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -125,16 +125,30 @@ fun PokemonDetail(
                               modifier = Modifier.size(300.dp)
                          )
 
-                         Image(
-                              painter = painter,
-                              contentDescription = null,
-                              modifier = Modifier
-                                   .align(Alignment.Center)
-                                   .padding(bottom = 10.dp)
-                                   .fillMaxSize()
-                                   .size(200.dp),
-                              contentScale = ContentScale.Fit
-                         )
+                         if(painter.state is AsyncImagePainter.State.Error || painter.state is AsyncImagePainter.State.Empty){
+                              Image(
+                                   painter = painterResource(id = R.drawable.pokeball_default_img),
+                                   contentDescription = null,
+                                   modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(bottom = 10.dp)
+                                        .fillMaxSize()
+                                        .size(150.dp),
+                                   contentScale = ContentScale.Fit
+                              )
+                         }else{
+                              Image(
+                                   painter = painter,
+                                   contentDescription = null,
+                                   modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(bottom = 10.dp)
+                                        .fillMaxSize()
+                                        .size(200.dp),
+                                   contentScale = ContentScale.Fit
+                              )
+                         }
+
                     }
 
                     Card(
@@ -195,7 +209,7 @@ fun PokemonDetail(
                                         modifier = Modifier.padding(bottom = 20.dp)
                                    ) {
                                         itemsIndexed(pokemonEvolutionChain) { index,item ->
-                                             EvolutionIndex(item,index == pokemonEvolutionChain.lastIndex)
+                                             EvolutionItem(item,index == pokemonEvolutionChain.lastIndex)
                                         }
                                    }
                               }
@@ -488,7 +502,7 @@ fun TopBar(pokemonName: String, navigationController: NavHostController){
 }
 
 @Composable
-fun EvolutionIndex(pokemon:Pokemon, isEnd: Boolean){
+fun EvolutionItem(pokemon:Pokemon, isEnd: Boolean){
      val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png")
 
      Row(
@@ -496,14 +510,27 @@ fun EvolutionIndex(pokemon:Pokemon, isEnd: Boolean){
           modifier = Modifier.padding(bottom = 20.dp)
      ){
           Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-               Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                         .padding(bottom = 5.dp)
-                         .size(60.dp),
-                    contentScale = ContentScale.Fit
-               )
+
+               if(painter.state is AsyncImagePainter.State.Error || painter.state is AsyncImagePainter.State.Empty){
+                    Image(
+                         painter = painterResource(id = R.drawable.pokeball_default_img),
+                         contentDescription = null,
+                         modifier = Modifier
+                              .padding(bottom = 5.dp)
+                              .size(60.dp),
+                         contentScale = ContentScale.Fit
+                    )
+               }else{
+                    Image(
+                         painter = painter,
+                         contentDescription = null,
+                         modifier = Modifier
+                              .padding(bottom = 5.dp)
+                              .size(60.dp),
+                         contentScale = ContentScale.Fit
+                    )
+               }
+
                Text(
                     text = pokemon.name,
                     color = textItemColor,

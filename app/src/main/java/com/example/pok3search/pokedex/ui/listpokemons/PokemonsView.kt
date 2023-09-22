@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
@@ -220,7 +221,6 @@ fun PokemonItem(index: Int, pokemon: Pokemon, onItemselected: (Pokemon) ->Unit){
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
-
             Image(
                 painter = painterResource(id = R.drawable.pokemon_back),
                 contentDescription = null,
@@ -242,15 +242,27 @@ fun PokemonItem(index: Int, pokemon: Pokemon, onItemselected: (Pokemon) ->Unit){
                     .align(Alignment.Center)
             )
 
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(bottom = 5.dp)
-                    .size(60.dp),
-                contentScale = ContentScale.Fit
-            )
+            if(painter.state is AsyncImagePainter.State.Error || painter.state is AsyncImagePainter.State.Empty){
+                Image(
+                    painter = painterResource(id = R.drawable.pokeball_default_img),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(60.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }else{
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(bottom = 5.dp)
+                        .size(60.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+
 
 
         }
