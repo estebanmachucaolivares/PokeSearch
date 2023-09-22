@@ -4,6 +4,9 @@ package com.example.pok3search
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,7 +45,15 @@ fun PokemonDetail(
 
      detailPokemonViewModel.getPokemonDescription(pokemonId = pokemon.id)
 
-     val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription("",""))
+     val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription("","",""))
+
+     val pokemonEvolutionChain:List<Pokemon> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
+
+     LaunchedEffect(pokemonDescription){
+         if(pokemonDescription.pokemonEvolutionUrl.isNotEmpty()){
+              detailPokemonViewModel.getPokemonEvolutionChain(pokemonDescription.pokemonEvolutionUrl)
+         }
+     }
 
      Scaffold(
           topBar = {
@@ -107,12 +118,17 @@ fun PokemonDetail(
 
                          colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                         Column(
+                              modifier = Modifier.fillMaxWidth(),
+                              horizontalAlignment = Alignment.CenterHorizontally,
+                              verticalArrangement = Arrangement.Center
+                         ) {
                               Text(
                                    text = pokemonDescription.pokemonType,
                                    Modifier.padding(20.dp),
                                    color = textItemColor,
-                                   fontWeight = FontWeight.Bold
+                                   fontWeight = FontWeight.Bold,
+                                   textAlign = TextAlign.Center
                               )
                               Text(
                                    text = pokemonDescription.pokemonDescription,
@@ -124,75 +140,42 @@ fun PokemonDetail(
                          }
                     }
 
-                    Card(
-                         modifier = Modifier
-                              .padding(10.dp)
-                              .fillMaxWidth(),
 
-                         colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                         val evolutionList: List<Pokemon> = listOf()
+                    if(pokemonEvolutionChain.size>1){
+                         Card(
+                              modifier = Modifier
+                                   .padding(10.dp)
+                                   .fillMaxWidth(),
 
-                         Column(
-                              modifier = Modifier.fillMaxWidth(),
-                              horizontalAlignment = Alignment.CenterHorizontally,
-                              verticalArrangement = Arrangement.Center
+                              colors = CardDefaults.cardColors(containerColor = Color.White)
                          ) {
-                              Text(
-                                   text = "Evoluciones",
-                                   Modifier.padding(20.dp),
-                                   color = textItemColor,
-                                   fontWeight = FontWeight.Bold
-                              )
 
-                              /*LazyRow(
-                                   contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                                   horizontalArrangement = Arrangement.spacedBy(8.dp)
+                              Column(
+                                   modifier = Modifier.fillMaxWidth(),
+                                   horizontalAlignment = Alignment.CenterHorizontally,
+                                   verticalArrangement = Arrangement.Center
                               ) {
-                                   items(evolutionList) {
-                                        EvolutionIndex(it)
+                                   Text(
+                                        text = "Evoluciones",
+                                        Modifier.padding(20.dp),
+                                        color = textItemColor,
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center
+                                   )
+
+                                   LazyRow(
+                                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.padding(bottom = 20.dp)
+                                   ) {
+                                        itemsIndexed(pokemonEvolutionChain) { index,item ->
+                                             EvolutionIndex(item,index == pokemonEvolutionChain.lastIndex)
+                                        }
                                    }
-                              }*/
-
-                              Row(
-                                   verticalAlignment = Alignment.CenterVertically,
-                                   modifier = Modifier.padding(bottom = 20.dp)
-                              ) {
-                                   Image(
-                                        painter = painterResource(id = R.drawable.pokemon_test_view),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                             .padding(bottom = 5.dp)
-                                             .size(60.dp),
-                                        contentScale = ContentScale.Fit
-                                   )
-                                   Icon(
-                                        imageVector = Icons.Default.ArrowForward,
-                                        contentDescription = ""
-                                   )
-                                   Image(
-                                        painter = painterResource(id = R.drawable.pokemon_test_view),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                             .padding(bottom = 5.dp)
-                                             .size(60.dp),
-                                        contentScale = ContentScale.Fit
-                                   )
-                                   Icon(
-                                        imageVector = Icons.Default.ArrowForward,
-                                        contentDescription = ""
-                                   )
-                                   Image(
-                                        painter = painterResource(id = R.drawable.pokemon_test_view),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                             .padding(bottom = 5.dp)
-                                             .size(60.dp),
-                                        contentScale = ContentScale.Fit
-                                   )
                               }
                          }
                     }
+
 
 
                     Card(
@@ -210,7 +193,8 @@ fun PokemonDetail(
                                    text = "Estadísticas",
                                    Modifier.padding(bottom = 20.dp),
                                    color = textItemColor,
-                                   fontWeight = FontWeight.Bold
+                                   fontWeight = FontWeight.Bold,
+                                   textAlign = TextAlign.Center
                               )
 
 
@@ -400,9 +384,12 @@ fun PokemonDetail(
                                    text = "Habilidades",
                                    Modifier.padding(bottom = 20.dp),
                                    color = textItemColor,
-                                   fontWeight = FontWeight.Bold
+                                   fontWeight = FontWeight.Bold,
+                                   textAlign = TextAlign.Center
                               )
-                              Column(modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
+                              Column(modifier = Modifier
+                                   .fillMaxWidth()
+                                   .padding(bottom = 10.dp)) {
                                    Text(
                                         text = "Espesura",
                                         color = textItemColor,
@@ -418,7 +405,9 @@ fun PokemonDetail(
                                    )
                               }
 
-                              Column(modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
+                              Column(modifier = Modifier
+                                   .fillMaxWidth()
+                                   .padding(bottom = 10.dp)) {
                                    Text(
                                         text = "Espesura",
                                         color = textItemColor,
@@ -473,14 +462,33 @@ fun TopBar(pokemonName: String, navigationController: NavHostController){
 }
 
 @Composable
-fun EvolutionIndex(pokemon:Pokemon){
-     Image(
-          painter = painterResource(id = R.drawable.pokemon_test_view),
-          contentDescription = null,
-          modifier = Modifier
-               .padding(bottom = 5.dp)
-               .size(60.dp)
-          ,
-          contentScale = ContentScale.Fit
-     )
+fun EvolutionIndex(pokemon:Pokemon, isEnd: Boolean){
+     val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png")
+
+     Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.padding(bottom = 20.dp)
+     ){
+          Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+               Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                         .padding(bottom = 5.dp)
+                         .size(60.dp),
+                    contentScale = ContentScale.Fit
+               )
+               Text(
+                    text = pokemon.name,
+                    color = textItemColor,
+                    fontSize = 12.sp
+               )
+          }
+          if (!isEnd){
+               Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = ""
+               )
+          }
+     }
 }

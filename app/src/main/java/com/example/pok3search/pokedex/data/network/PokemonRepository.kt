@@ -1,6 +1,7 @@
 package com.example.pok3search.pokedex.data.network
 
 import android.util.Log
+import com.example.pok3search.pokedex.data.network.response.PokemonWithId
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonDescription
 import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
@@ -25,11 +26,19 @@ class PokemonRepository @Inject constructor(private val api:PokemonService)  {
     suspend fun getPokemonDescription(pokemonId:Int): PokemonDescription{
         val pokemonDescriptions = api.getPokemonDetails(pokemonId)
 
-        val pokemonType = pokemonDescriptions.genera.find { it.language.name == "es" }?.genus ?:""
+        val pokemonType = pokemonDescriptions.genera.find { it.language.name == "es" }?.genus ?:
+        pokemonDescriptions.genera.find { it.language.name == "en" }?.genus ?: "Sin Información"
 
-        val pokemonDescription = pokemonDescriptions.flavor_text_entries.find { it.language.name == "es" }?.flavor_text ?:""
+        val pokemonDescription = pokemonDescriptions.flavor_text_entries.find { it.language.name == "es" }?.flavor_text ?:
+        pokemonDescriptions.flavor_text_entries.find { it.language.name == "en" }?.flavor_text ?:"Sin Información"
 
-        return PokemonDescription(pokemonType,pokemonDescription)
+        return PokemonDescription(pokemonType,pokemonDescription,pokemonDescriptions.evolution_chain.url)
+    }
+
+
+    suspend fun getEvolutionChainForPokemon(pokemonUrl: String):List<Pokemon>{
+        val res = api.getEvolutionChainForPokemon(pokemonUrl)
+        return res.map { it.toDomain() }
     }
 
 }
