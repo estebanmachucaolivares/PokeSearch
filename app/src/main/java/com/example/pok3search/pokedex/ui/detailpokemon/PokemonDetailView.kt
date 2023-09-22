@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonDescription
+import com.example.pok3search.pokedex.domain.model.PokemonStats
 import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
 import com.example.pok3search.ui.theme.Primary
 import com.example.pok3search.ui.theme.textItemColor
@@ -43,17 +44,28 @@ fun PokemonDetail(
      detailPokemonViewModel: DetailPokemonViewModel
 ) {
 
-     detailPokemonViewModel.getPokemonDescription(pokemonId = pokemon.id)
+     detailPokemonViewModel.getPokemonDescription(pokemon.id)
 
      val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription("","",""))
 
      val pokemonEvolutionChain:List<Pokemon> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
+
+     val pokemonStats:List<PokemonStats> by detailPokemonViewModel.pokemonStats.observeAsState(initial = listOf())
+
+     val hp = pokemonStats.find { it.name =="hp" }?.baseStat ?: 0
+     val attack = pokemonStats.find { it.name =="attack" }?.baseStat ?: 0
+     val defense = pokemonStats.find { it.name =="defense" }?.baseStat ?: 0
+     val speed = pokemonStats.find { it.name =="speed" }?.baseStat ?: 0
+     val specialAttack = pokemonStats.find { it.name =="special-attack" }?.baseStat ?: 0
+     val specialDefense = pokemonStats.find { it.name =="special-defense" }?.baseStat ?: 0
 
      LaunchedEffect(pokemonDescription){
          if(pokemonDescription.pokemonEvolutionUrl.isNotEmpty()){
               detailPokemonViewModel.getPokemonEvolutionChain(pokemonDescription.pokemonEvolutionUrl)
          }
      }
+
+     detailPokemonViewModel.getPokemonStats(pokemon.id)
 
      Scaffold(
           topBar = {
@@ -213,7 +225,7 @@ fun PokemonDetail(
                                         fontSize = 14.sp
                                    )
                                    Text(
-                                        text = "45",
+                                        text = hp.toString(),
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.weight(0.1f),
                                         color = Color.Black,
@@ -226,7 +238,7 @@ fun PokemonDetail(
                                                   height = 5.dp
                                              )
                                              .weight(0.6f),
-                                        progress = 0.5f
+                                        progress = statsToFloat(hp)
                                    )
                               }
                               Row(
@@ -244,7 +256,7 @@ fun PokemonDetail(
                                         fontSize = 14.sp
                                    )
                                    Text(
-                                        text = "45",
+                                        text = attack.toString(),
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.weight(0.1f),
                                         color = Color.Black,
@@ -254,7 +266,7 @@ fun PokemonDetail(
                                         modifier = Modifier
                                              .size(width = 100.dp, height = 5.dp)
                                              .weight(0.6f),
-                                        progress = 0.5f
+                                        progress = statsToFloat(attack)
                                    )
                               }
                               Row(
@@ -272,7 +284,7 @@ fun PokemonDetail(
                                         fontSize = 14.sp
                                    )
                                    Text(
-                                        text = "45",
+                                        text = defense.toString(),
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.weight(0.1f),
                                         color = Color.Black,
@@ -282,7 +294,7 @@ fun PokemonDetail(
                                         modifier = Modifier
                                              .size(width = 100.dp, height = 5.dp)
                                              .weight(0.6f),
-                                        progress = 0.5f
+                                        progress = statsToFloat(defense)
                                    )
                               }
                               Row(
@@ -300,7 +312,7 @@ fun PokemonDetail(
                                         fontSize = 14.sp
                                    )
                                    Text(
-                                        text = "45",
+                                        text = speed.toString(),
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.weight(0.1f),
                                         color = Color.Black,
@@ -310,7 +322,7 @@ fun PokemonDetail(
                                         modifier = Modifier
                                              .size(width = 100.dp, height = 5.dp)
                                              .weight(0.6f),
-                                        progress = 0.5f
+                                        progress = statsToFloat(speed)
                                    )
                               }
                               Row(
@@ -328,7 +340,7 @@ fun PokemonDetail(
                                         fontSize = 14.sp
                                    )
                                    Text(
-                                        text = "45",
+                                        text = specialAttack.toString(),
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.weight(0.1f),
                                         color = Color.Black,
@@ -338,7 +350,7 @@ fun PokemonDetail(
                                         modifier = Modifier
                                              .size(width = 100.dp, height = 5.dp)
                                              .weight(0.6f),
-                                        progress = 0.5f
+                                        progress = statsToFloat(specialAttack)
                                    )
                               }
                               Row(
@@ -356,7 +368,7 @@ fun PokemonDetail(
                                         fontSize = 14.sp
                                    )
                                    Text(
-                                        text = "45",
+                                        text = specialDefense.toString(),
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.weight(0.1f),
                                         color = Color.Black,
@@ -366,7 +378,7 @@ fun PokemonDetail(
                                         modifier = Modifier
                                              .size(width = 100.dp, height = 5.dp)
                                              .weight(0.6f),
-                                        progress = 0.5f
+                                        progress = statsToFloat(specialDefense)
                                    )
                               }
                          }
@@ -490,5 +502,15 @@ fun EvolutionIndex(pokemon:Pokemon, isEnd: Boolean){
                     contentDescription = ""
                )
           }
+     }
+
+}
+
+private fun statsToFloat(stats: Int): Float {
+     return try {
+          val statsFloat = stats.toFloat() / 100
+          if (statsFloat > 1) 1f else statsFloat
+     } catch (e: Exception) {
+          0f
      }
 }

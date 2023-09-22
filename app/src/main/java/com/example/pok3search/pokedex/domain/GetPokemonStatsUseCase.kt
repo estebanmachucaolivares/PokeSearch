@@ -1,0 +1,11 @@
+package com.example.pok3search.pokedex.domain
+
+import com.example.pok3search.pokedex.data.network.PokemonRepository
+import com.example.pok3search.pokedex.domain.model.PokemonStats
+import javax.inject.Inject
+
+class GetPokemonStatsUseCase @Inject constructor(private val repository: PokemonRepository){
+    suspend fun invoke(pokemonId:Int):List<PokemonStats>{
+        return repository.getPokemonStats(pokemonId)
+    }
+}

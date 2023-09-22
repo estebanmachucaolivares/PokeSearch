@@ -1,11 +1,6 @@
 package com.example.pok3search.pokedex.data.network
 
-import android.util.Log
-import com.example.pok3search.pokedex.data.network.response.PokemonWithId
-import com.example.pok3search.pokedex.domain.model.Pokemon
-import com.example.pok3search.pokedex.domain.model.PokemonDescription
-import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
-import com.example.pok3search.pokedex.domain.model.toDomain
+import com.example.pok3search.pokedex.domain.model.*
 import javax.inject.Inject
 
 class PokemonRepository @Inject constructor(private val api:PokemonService)  {
@@ -39,6 +34,11 @@ class PokemonRepository @Inject constructor(private val api:PokemonService)  {
     suspend fun getEvolutionChainForPokemon(pokemonUrl: String):List<Pokemon>{
         val res = api.getEvolutionChainForPokemon(pokemonUrl)
         return res.map { it.toDomain() }
+    }
+
+    suspend fun getPokemonStats(pokemonId: Int):List<PokemonStats>{
+        val res = api.getPokemonStats(pokemonId)
+        return res.stats.map { it.toDomain() }
     }
 
 }
