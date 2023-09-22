@@ -67,14 +67,14 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
                     evolutionNames.add(PokemonWithId(pokemonId, evolutionChain.chain.species.name))
 
                     if (evolutionChain.chain.evolves_to.isNotEmpty()) {
-                        val name = evolutionChain.chain.evolves_to[0].species.name
-                        val pokemonId = getPokemonIdForUrl(evolutionChain.chain.evolves_to[0].species.url)
-                        evolutionNames.add(PokemonWithId(pokemonId, name))
-
-                        if (evolutionChain.chain.evolves_to[0].evolves_to.isNotEmpty()) {
-                            val name = evolutionChain.chain.evolves_to[0].evolves_to[0].species.name
-                            val pokemonId = getPokemonIdForUrl(evolutionChain.chain.evolves_to[0].evolves_to[0].species.url)
-                            evolutionNames.add(PokemonWithId(pokemonId, name))
+                        for (evolution in evolutionChain.chain.evolves_to) {
+                            val pokemonId = getPokemonIdForUrl(evolution.species.url)
+                            evolutionNames.add(PokemonWithId(pokemonId, evolution.species.name))
+                            if (evolution.evolves_to.isNotEmpty()) {
+                                val name = evolution.evolves_to[0].species.name
+                                val pokemonId = getPokemonIdForUrl(evolution.evolves_to[0].species.url)
+                                evolutionNames.add(PokemonWithId(pokemonId, name))
+                            }
                         }
                     }
                 }
