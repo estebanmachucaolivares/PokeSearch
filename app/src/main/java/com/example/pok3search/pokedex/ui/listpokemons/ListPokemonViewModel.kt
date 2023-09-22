@@ -23,14 +23,7 @@ class ListPokemonViewModel @Inject constructor(
 
     fun getAllPokemons(){
         viewModelScope.launch {
-
-            /*val list = getAllPokemonUseCase.invoke()
-            _pokemonList.postValue(list)
-            Log.d("lista pokemons", "cantidad de pokemnones: ${list.size}")*/
-
-            val list = getPokemonWithRegionUsecase.invoke()
-            _pokemonList.postValue(list)
-
+            _pokemonList.postValue(getPokemonWithRegionUsecase.invoke())
         }
     }
 }

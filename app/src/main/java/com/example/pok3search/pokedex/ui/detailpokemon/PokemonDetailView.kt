@@ -28,6 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonDescription
 import com.example.pok3search.pokedex.domain.model.PokemonStats
@@ -43,6 +47,9 @@ fun PokemonDetail(
      navigationController: NavHostController,
      detailPokemonViewModel: DetailPokemonViewModel
 ) {
+     val composition by rememberLottieComposition(
+          spec = LottieCompositionSpec.RawRes(R.raw.animation_background)// Reemplaza con la referencia a tu archivo JSON
+     )
 
      detailPokemonViewModel.getPokemonDescription(pokemon.id)
 
@@ -111,14 +118,21 @@ fun PokemonDetail(
                          }
                     }
 
-                    Box(Modifier.size(200.dp), contentAlignment = Alignment.Center) {
+                    Box( contentAlignment = Alignment.Center) {
+                         LottieAnimation(
+                              composition = composition,
+                              iterations = LottieConstants.IterateForever,
+                              modifier = Modifier.size(300.dp)
+                         )
+
                          Image(
                               painter = painter,
                               contentDescription = null,
                               modifier = Modifier
                                    .align(Alignment.Center)
                                    .padding(bottom = 10.dp)
-                                   .fillMaxSize(),
+                                   .fillMaxSize()
+                                   .size(200.dp),
                               contentScale = ContentScale.Fit
                          )
                     }

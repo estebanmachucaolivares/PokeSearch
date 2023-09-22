@@ -123,7 +123,6 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
                 searchText = searchText,
                 onSearchTextChanged = {
                     searchText = it
-                    Log.d("search", it)
                     filterPokemonList(pokemonList, it, filteredPokemonList)
                 },
                 onSearchSubmit = { Log.d("search", "submit") },
@@ -278,8 +277,6 @@ fun PokemonGridList(
     navigationController: NavHostController,
     showFab: (Boolean) -> Unit
 ) {
-
-    Log.d("pokemon list agrupada", pokemonList.toString())
 
     showFab(listState.firstVisibleItemIndex > 2)
 

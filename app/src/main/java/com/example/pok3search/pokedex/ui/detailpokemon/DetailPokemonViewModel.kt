@@ -45,9 +45,7 @@ class DetailPokemonViewModel @Inject constructor(
 
     fun getPokemonStats(pokemonId:Int){
         viewModelScope.launch {
-            val pokemonStats = getPokemonStatsUseCase.invoke(pokemonId)
-            Log.d("pokemon stats", pokemonStats.toString())
-            _pokemonStats.postValue(pokemonStats)
+            _pokemonStats.postValue(getPokemonStatsUseCase.invoke(pokemonId))
         }
     }
 
