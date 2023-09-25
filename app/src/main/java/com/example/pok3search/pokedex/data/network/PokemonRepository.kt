@@ -19,15 +19,7 @@ class PokemonRepository @Inject constructor(private val api:PokemonService)  {
     }
 
     suspend fun getPokemonDescription(pokemonId:Int): PokemonDescription{
-        val pokemonDescriptions = api.getPokemonDetails(pokemonId)
-
-        val pokemonType = pokemonDescriptions.genera.find { it.language.name == "es" }?.genus ?:
-        pokemonDescriptions.genera.find { it.language.name == "en" }?.genus ?: "Sin Información"
-
-        val pokemonDescription = pokemonDescriptions.flavor_text_entries.find { it.language.name == "es" }?.flavor_text ?:
-        pokemonDescriptions.flavor_text_entries.find { it.language.name == "en" }?.flavor_text ?:"Sin Información"
-
-        return PokemonDescription(pokemonType,pokemonDescription,pokemonDescriptions.evolution_chain.url)
+        return api.getPokemonDetails(pokemonId).toDomain()
     }
 
 

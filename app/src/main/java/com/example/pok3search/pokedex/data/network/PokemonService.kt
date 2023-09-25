@@ -1,9 +1,6 @@
 package com.example.pok3search.pokedex.data.network
 
-import com.example.pok3search.pokedex.data.network.response.PokemonAbilityResultResponse
-import com.example.pok3search.pokedex.data.network.response.PokemonListItemResponse
-import com.example.pok3search.pokedex.data.network.response.PokemonWithIdResponse
-import com.example.pok3search.pokedex.data.network.response.PokemonWithIdGroupByRegionResponse
+import com.example.pok3search.pokedex.data.network.response.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -53,7 +50,18 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
         }
     }
 
-    suspend fun getPokemonDetails(pokemonId: Int) = pokemonClient.getPokemonDetails(pokemonId)
+    suspend fun getPokemonDetails(pokemonId: Int): DescriptionResponse{
+
+        val pokemonDescriptions = pokemonClient.getPokemonDetails(pokemonId)
+
+        val pokemonType = pokemonDescriptions.genera.find { it.language.name == "es" }?.genus ?:
+        pokemonDescriptions.genera.find { it.language.name == "en" }?.genus ?: "Sin Información"
+
+        val pokemonDescription = pokemonDescriptions.flavor_text_entries.find { it.language.name == "es" }?.flavor_text ?:
+        pokemonDescriptions.flavor_text_entries.find { it.language.name == "en" }?.flavor_text ?:"Sin Información"
+
+        return DescriptionResponse(pokemonType,pokemonDescription,pokemonDescriptions.evolution_chain.url)
+    }
 
     suspend fun getEvolutionChainForPokemon(pokemonUrl: String):List<PokemonWithIdResponse> = withContext(Dispatchers.IO){
         val call = pokemonClient.getEvolutionChain(pokemonUrl)
