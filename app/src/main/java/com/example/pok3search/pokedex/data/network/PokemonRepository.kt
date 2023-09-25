@@ -22,9 +22,8 @@ class PokemonRepository @Inject constructor(private val api:PokemonService)  {
         return api.getPokemonDetails(pokemonId).toDomain()
     }
 
-
-    suspend fun getEvolutionChainForPokemon(pokemonUrl: String):List<Pokemon>{
-        val res = api.getEvolutionChainForPokemon(pokemonUrl)
+    suspend fun getEvolutionChainForPokemon(pokemonId:Int):List<Pokemon>{
+        val res = api.getEvolutionChainForPokemon(pokemonId)
         return res.map { it.toDomain() }
     }
 

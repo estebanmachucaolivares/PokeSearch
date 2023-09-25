@@ -54,14 +54,9 @@ fun PokemonDetail(
           spec = LottieCompositionSpec.RawRes(R.raw.animation_background)// Reemplaza con la referencia a tu archivo JSON
      )
 
-     detailPokemonViewModel.getPokemonDescription(pokemon.id)
-
-     val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription("","",""))
-
+     val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription("",""))
      val pokemonEvolutionChain:List<Pokemon> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
-
      val pokemonStats:List<PokemonStats> by detailPokemonViewModel.pokemonStats.observeAsState(initial = listOf())
-
      val pokemonAbilities:List<PokemonAbility> by detailPokemonViewModel.pokemonAbilities.observeAsState(initial = listOf())
 
      val hp = pokemonStats.find { it.name =="hp" }?.baseStat ?: 0
@@ -71,14 +66,11 @@ fun PokemonDetail(
      val specialAttack = pokemonStats.find { it.name =="special-attack" }?.baseStat ?: 0
      val specialDefense = pokemonStats.find { it.name =="special-defense" }?.baseStat ?: 0
 
-     LaunchedEffect(pokemonDescription){
-         if(pokemonDescription.pokemonEvolutionUrl.isNotEmpty()){
-              detailPokemonViewModel.getPokemonEvolutionChain(pokemonDescription.pokemonEvolutionUrl)
-         }
-     }
-
-     detailPokemonViewModel.getPokemonStats(pokemon.id)
+     //Obtener información de Pokemon
+     detailPokemonViewModel.getPokemonDescription(pokemon.id)
+     detailPokemonViewModel.getPokemonEvolutionChain(pokemon.id)
      detailPokemonViewModel.getPokemonAbility(pokemon.id)
+     detailPokemonViewModel.getPokemonStats(pokemon.id)
 
      Scaffold(
           topBar = {

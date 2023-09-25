@@ -24,6 +24,9 @@ interface PokemonClient {
 
     @GET("pokemon-species/{id}/")
     suspend fun getPokemonDetails(@Path("id") id: Int):PokemonDescriptionResponse
+    @GET("pokemon-species/{id}/")
+    suspend fun getPokemonEvolutionChain(@Path("id") id: Int):PokemonEvolutionsResponse
+
 
     @GET
     fun getEvolutionChain(@Url url: String): Call<EvolutionChain>

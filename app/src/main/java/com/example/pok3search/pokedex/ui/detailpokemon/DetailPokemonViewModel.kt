@@ -43,9 +43,9 @@ class DetailPokemonViewModel @Inject constructor(
         }
     }
 
-    fun getPokemonEvolutionChain(pokemonEvolutionUrl:String){
+    fun getPokemonEvolutionChain(pokemonId:Int){
         viewModelScope.launch {
-            _pokemonEvolutionChain.postValue(getEvolutionChainUseCase.invoke(pokemonEvolutionUrl))
+            _pokemonEvolutionChain.postValue(getEvolutionChainUseCase.invoke(pokemonId))
         }
     }
 
