@@ -66,4 +66,12 @@ class DetailPokemonViewModel @Inject constructor(
         }
     }
 
+    fun clearPokemonDetail() {
+        _pokemonDescription.value = PokemonDescription("","")
+        _pokemonEvolutionChain.value = emptyList()
+        _pokemonStats.value = emptyList()
+        _pokemonAbilities.value = emptyList()
+        _pokemonTypes.value = emptyList()
+    }
+
 }

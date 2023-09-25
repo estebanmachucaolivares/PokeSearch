@@ -4,9 +4,7 @@ package com.example.pok3search
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,12 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -46,6 +44,14 @@ fun PokemonDetail(
      navigationController: NavHostController,
      detailPokemonViewModel: DetailPokemonViewModel
 ) {
+
+     DisposableEffect(Unit) {
+          onDispose {
+               // Llama a la función para limpiar los datos en el ViewModel
+               detailPokemonViewModel.clearPokemonDetail()
+          }
+     }
+
      val composition by rememberLottieComposition(
           spec = LottieCompositionSpec.RawRes(R.raw.animation_background)// Reemplaza con la referencia a tu archivo JSON
      )
@@ -77,7 +83,6 @@ fun PokemonDetail(
           containerColor = Color.Transparent,
           content = {
 
-               val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png")
 
                Column(
                     modifier = Modifier
@@ -87,374 +92,17 @@ fun PokemonDetail(
                     horizontalAlignment = Alignment.CenterHorizontally
                ) {
 
-                    Box(
-                         modifier = Modifier
-                    ){
+                    MainImage(pokemon, composition)
 
-                         Box(  modifier = Modifier
-                              .padding(start = 10.dp, top = 10.dp)
-                              .widthIn(max = Dp.Infinity)){
-                              Image(
-                                   painter = painterResource(id = R.drawable.circle_dex),
-                                   contentDescription = null,
-                                   modifier = Modifier
-                                        .align(Alignment.TopStart),
-                                   contentScale = ContentScale.Crop
-                              )
-                         }
-                         Box(  modifier = Modifier
-                              .widthIn(max = Dp.Infinity)){
-                              Image(
-                                   painter = painterResource(id = R.drawable.line_top_dex),
-                                   contentDescription = null,
-                                   modifier = Modifier
-                                        .align(Alignment.TopStart),
-                                   contentScale = ContentScale.Fit
-                              )
-                         }
-                    }
+                    TypeChips(pokemonTypes)
 
-                    Box( contentAlignment = Alignment.Center) {
-                         LottieAnimation(
-                              composition = composition,
-                              iterations = LottieConstants.IterateForever,
-                              modifier = Modifier.size(300.dp)
-                         )
+                    Description(pokemonDescription)
 
-                         if(painter.state is AsyncImagePainter.State.Error || painter.state is AsyncImagePainter.State.Empty){
-                              Image(
-                                   painter = painterResource(id = R.drawable.pokeball_default_img),
-                                   contentDescription = null,
-                                   modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .padding(bottom = 10.dp)
-                                        .fillMaxSize()
-                                        .size(150.dp),
-                                   contentScale = ContentScale.Fit
-                              )
-                         }else{
-                              Image(
-                                   painter = painter,
-                                   contentDescription = null,
-                                   modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .padding(bottom = 10.dp)
-                                        .fillMaxSize()
-                                        .size(200.dp),
-                                   contentScale = ContentScale.Fit
-                              )
-                         }
+                    EvolutionChain(pokemonEvolutionChain)
 
-                    }
+                    Stats(hp, attack, defense, speed, specialAttack, specialDefense)
 
-                    Row(modifier = Modifier.fillMaxWidth(),
-                         horizontalArrangement =  Arrangement.Center,
-                         verticalAlignment = Alignment.CenterVertically
-                    ){
-
-                         pokemonTypes.forEach {
-                              val colorChips = colorByType(it.typeName)
-                              AssistChip(
-                                   modifier = Modifier.padding(4.dp),
-                                   label = { Text(text = it.typeName) },
-                                   onClick = {},
-                                   colors = AssistChipDefaults.assistChipColors(
-                                        labelColor = Color.White,
-                                        containerColor = colorChips
-                                   ),
-                                   border = AssistChipDefaults.assistChipBorder(
-                                        borderColor = colorChips
-                                   )
-                              )
-                         }
-                    }
-
-                    Card(
-                         modifier = Modifier
-                              .padding(10.dp)
-                              .fillMaxWidth(),
-
-                         colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                         Column(
-                              modifier = Modifier.fillMaxWidth(),
-                              horizontalAlignment = Alignment.CenterHorizontally,
-                              verticalArrangement = Arrangement.Center
-                         ) {
-                              Text(
-                                   text = pokemonDescription.pokemonType,
-                                   Modifier.padding(20.dp),
-                                   color = textItemColor,
-                                   fontWeight = FontWeight.Bold,
-                                   textAlign = TextAlign.Center
-                              )
-                              Text(
-                                   text = pokemonDescription.pokemonDescription,
-                                   Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
-                                   textAlign = TextAlign.Center,
-                                   color = Color.Black,
-                                   fontSize = 14.sp
-                              )
-                         }
-                    }
-
-
-                    if(pokemonEvolutionChain.size>1){
-                         Card(
-                              modifier = Modifier
-                                   .padding(10.dp)
-                                   .fillMaxWidth(),
-
-                              colors = CardDefaults.cardColors(containerColor = Color.White)
-                         ) {
-
-                              Column(
-                                   modifier = Modifier.fillMaxWidth(),
-                                   horizontalAlignment = Alignment.CenterHorizontally,
-                                   verticalArrangement = Arrangement.Center
-                              ) {
-                                   Text(
-                                        text = "Evoluciones",
-                                        Modifier.padding(20.dp),
-                                        color = textItemColor,
-                                        fontWeight = FontWeight.Bold,
-                                        textAlign = TextAlign.Center
-                                   )
-
-                                   LazyRow(
-                                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        modifier = Modifier.padding(bottom = 20.dp)
-                                   ) {
-                                        itemsIndexed(pokemonEvolutionChain) { index,item ->
-                                             EvolutionItem(item,index == pokemonEvolutionChain.lastIndex)
-                                        }
-                                   }
-                              }
-                         }
-                    }
-
-
-
-                    Card(
-                         modifier = Modifier
-                              .padding(10.dp)
-                              .fillMaxWidth(),
-
-                         colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                         Column(
-                              horizontalAlignment = Alignment.CenterHorizontally,
-                              modifier = Modifier.padding(20.dp)
-                         ) {
-                              Text(
-                                   text = "Estadísticas",
-                                   Modifier.padding(bottom = 20.dp),
-                                   color = textItemColor,
-                                   fontWeight = FontWeight.Bold,
-                                   textAlign = TextAlign.Center
-                              )
-
-
-                              Row(
-                                   modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 3.dp),
-                                   horizontalArrangement = Arrangement.SpaceBetween,
-                                   verticalAlignment = Alignment.CenterVertically
-                              ) {
-                                   Text(
-                                        text = "PS",
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.weight(0.3f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = hp.toString(),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.1f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   LinearProgressIndicator(
-                                        modifier = Modifier
-                                             .size(
-                                                  width = 100.dp,
-                                                  height = 5.dp
-                                             )
-                                             .weight(0.6f),
-                                        progress = statsToFloat(hp)
-                                   )
-                              }
-                              Row(
-                                   modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 3.dp),
-                                   horizontalArrangement = Arrangement.SpaceBetween,
-                                   verticalAlignment = Alignment.CenterVertically
-                              ) {
-                                   Text(
-                                        text = "Ataque",
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.weight(0.3f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = attack.toString(),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.1f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   LinearProgressIndicator(
-                                        modifier = Modifier
-                                             .size(width = 100.dp, height = 5.dp)
-                                             .weight(0.6f),
-                                        progress = statsToFloat(attack)
-                                   )
-                              }
-                              Row(
-                                   modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 3.dp),
-                                   horizontalArrangement = Arrangement.SpaceBetween,
-                                   verticalAlignment = Alignment.CenterVertically
-                              ) {
-                                   Text(
-                                        text = "Defensa",
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.weight(0.3f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = defense.toString(),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.1f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   LinearProgressIndicator(
-                                        modifier = Modifier
-                                             .size(width = 100.dp, height = 5.dp)
-                                             .weight(0.6f),
-                                        progress = statsToFloat(defense)
-                                   )
-                              }
-                              Row(
-                                   modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 3.dp),
-                                   horizontalArrangement = Arrangement.SpaceBetween,
-                                   verticalAlignment = Alignment.CenterVertically
-                              ) {
-                                   Text(
-                                        text = "Velocidad",
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.weight(0.3f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = speed.toString(),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.1f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   LinearProgressIndicator(
-                                        modifier = Modifier
-                                             .size(width = 100.dp, height = 5.dp)
-                                             .weight(0.6f),
-                                        progress = statsToFloat(speed)
-                                   )
-                              }
-                              Row(
-                                   modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 3.dp),
-                                   horizontalArrangement = Arrangement.SpaceBetween,
-                                   verticalAlignment = Alignment.CenterVertically
-                              ) {
-                                   Text(
-                                        text = "At. Especial",
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.weight(0.3f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = specialAttack.toString(),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.1f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   LinearProgressIndicator(
-                                        modifier = Modifier
-                                             .size(width = 100.dp, height = 5.dp)
-                                             .weight(0.6f),
-                                        progress = statsToFloat(specialAttack)
-                                   )
-                              }
-                              Row(
-                                   modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 3.dp),
-                                   horizontalArrangement = Arrangement.SpaceBetween,
-                                   verticalAlignment = Alignment.CenterVertically
-                              ) {
-                                   Text(
-                                        text = "Def. Especial",
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.weight(0.3f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = specialDefense.toString(),
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(0.1f),
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                                   LinearProgressIndicator(
-                                        modifier = Modifier
-                                             .size(width = 100.dp, height = 5.dp)
-                                             .weight(0.6f),
-                                        progress = statsToFloat(specialDefense)
-                                   )
-                              }
-                         }
-                    }
-
-                    Card(
-                         modifier = Modifier
-                              .padding(10.dp)
-                              .fillMaxWidth(),
-
-                         colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                         Column(
-                              horizontalAlignment = Alignment.CenterHorizontally,
-                              modifier = Modifier.padding(20.dp),
-                              verticalArrangement = Arrangement.Center
-                         ) {
-                              Text(
-                                   text = "Habilidades",
-                                   Modifier.padding(bottom = 20.dp),
-                                   color = textItemColor,
-                                   fontWeight = FontWeight.Bold,
-                                   textAlign = TextAlign.Center
-                              )
-
-                              pokemonAbilities.forEach {
-                                   PokemonAbilityItem(it)
-                              }
-                         }
-                    }
+                    Abilities(pokemonAbilities)
                }
           })
 }
@@ -465,7 +113,7 @@ fun TopBar(pokemonName: String, navigationController: NavHostController){
      CenterAlignedTopAppBar(
           title = {
                Text(
-                    pokemonName,
+                    pokemonName.replaceFirstChar { it.uppercase() },
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold
@@ -482,7 +130,7 @@ fun TopBar(pokemonName: String, navigationController: NavHostController){
                }
           },
           actions = {
-              
+
           },
           colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                containerColor = Primary,
@@ -490,6 +138,390 @@ fun TopBar(pokemonName: String, navigationController: NavHostController){
                navigationIconContentColor = Color.White
           )
      )
+}
+
+@Composable
+private fun MainImage(
+     pokemon: Pokemon,
+     composition: LottieComposition?
+) {
+     Box(contentAlignment = Alignment.Center) {
+
+          Image(
+               painter = painterResource(id = R.drawable.pokemon_back),
+               contentDescription = null,
+               modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(250.dp),
+               contentScale = ContentScale.Fit
+          )
+
+          val painter =
+               rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png")
+
+          LottieAnimation(
+               composition = composition,
+               iterations = LottieConstants.IterateForever,
+               modifier = Modifier.size(300.dp)
+          )
+
+          if (painter.state is AsyncImagePainter.State.Error || painter.state is AsyncImagePainter.State.Empty) {
+               Image(
+                    painter = painterResource(id = R.drawable.pokeball_default_img),
+                    contentDescription = null,
+                    modifier = Modifier
+                         .align(Alignment.Center)
+                         .padding(bottom = 10.dp)
+                         .fillMaxSize()
+                         .size(150.dp),
+                    contentScale = ContentScale.Fit
+               )
+          } else {
+               Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                         .align(Alignment.Center)
+                         .padding(bottom = 10.dp)
+                         .fillMaxSize()
+                         .size(200.dp),
+                    contentScale = ContentScale.Fit
+               )
+          }
+
+     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TypeChips(pokemonTypes: List<PokemonTypes>) {
+     Row(
+          modifier = Modifier.fillMaxWidth().height(35.dp),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = Alignment.CenterVertically
+     ) {
+
+          pokemonTypes.forEach {
+               val colorChips = colorByType(it.typeName)
+               AssistChip(
+                    modifier = Modifier.padding(4.dp),
+                    label = { Text(text = it.typeName) },
+                    onClick = {},
+                    colors = AssistChipDefaults.assistChipColors(
+                         labelColor = Color.White,
+                         containerColor = colorChips
+                    ),
+                    border = AssistChipDefaults.assistChipBorder(
+                         borderColor = colorChips
+                    )
+               )
+          }
+     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun Description(pokemonDescription: PokemonDescription) {
+     Card(
+          modifier = Modifier
+               .padding(10.dp)
+               .fillMaxWidth(),
+
+          colors = CardDefaults.cardColors(containerColor = Color.White)
+     ) {
+          Column(
+               modifier = Modifier.fillMaxWidth(),
+               horizontalAlignment = Alignment.CenterHorizontally,
+               verticalArrangement = Arrangement.Center
+          ) {
+               Text(
+                    text = pokemonDescription.pokemonType,
+                    Modifier.padding(20.dp),
+                    color = textItemColor,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+               )
+               Text(
+                    text = pokemonDescription.pokemonDescription,
+                    Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                    fontSize = 14.sp
+               )
+          }
+     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun EvolutionChain(pokemonEvolutionChain: List<Pokemon>) {
+     Card(
+          modifier = Modifier
+               .padding(10.dp)
+               .fillMaxWidth(),
+
+          colors = CardDefaults.cardColors(containerColor = Color.White)
+     ) {
+
+          Column(
+               modifier = Modifier.fillMaxWidth(),
+               horizontalAlignment = Alignment.CenterHorizontally,
+               verticalArrangement = Arrangement.Center
+          ) {
+               Text(
+                    text = "Evoluciones",
+                    Modifier.padding(20.dp),
+                    color = textItemColor,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+               )
+
+               LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = 20.dp)
+               ) {
+                    itemsIndexed(pokemonEvolutionChain) { index, item ->
+                         EvolutionItem(item, index == pokemonEvolutionChain.lastIndex)
+                    }
+               }
+          }
+     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun Stats(
+     hp: Int,
+     attack: Int,
+     defense: Int,
+     speed: Int,
+     specialAttack: Int,
+     specialDefense: Int
+) {
+     Card(
+          modifier = Modifier
+               .padding(10.dp)
+               .fillMaxWidth(),
+
+          colors = CardDefaults.cardColors(containerColor = Color.White)
+     ) {
+          Column(
+               horizontalAlignment = Alignment.CenterHorizontally,
+               modifier = Modifier.padding(20.dp)
+          ) {
+               Text(
+                    text = "Estadísticas",
+                    Modifier.padding(bottom = 20.dp),
+                    color = textItemColor,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+               )
+
+
+               Row(
+                    modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(bottom = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+               ) {
+                    Text(
+                         text = "PS",
+                         textAlign = TextAlign.Start,
+                         modifier = Modifier.weight(0.3f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    Text(
+                         text = hp.toString(),
+                         textAlign = TextAlign.Center,
+                         modifier = Modifier.weight(0.1f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    LinearProgressIndicator(
+                         modifier = Modifier
+                              .size(
+                                   width = 100.dp,
+                                   height = 5.dp
+                              )
+                              .weight(0.6f),
+                         progress = statsToFloat(hp)
+                    )
+               }
+               Row(
+                    modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(bottom = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+               ) {
+                    Text(
+                         text = "Ataque",
+                         textAlign = TextAlign.Start,
+                         modifier = Modifier.weight(0.3f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    Text(
+                         text = attack.toString(),
+                         textAlign = TextAlign.Center,
+                         modifier = Modifier.weight(0.1f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    LinearProgressIndicator(
+                         modifier = Modifier
+                              .size(width = 100.dp, height = 5.dp)
+                              .weight(0.6f),
+                         progress = statsToFloat(attack)
+                    )
+               }
+               Row(
+                    modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(bottom = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+               ) {
+                    Text(
+                         text = "Defensa",
+                         textAlign = TextAlign.Start,
+                         modifier = Modifier.weight(0.3f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    Text(
+                         text = defense.toString(),
+                         textAlign = TextAlign.Center,
+                         modifier = Modifier.weight(0.1f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    LinearProgressIndicator(
+                         modifier = Modifier
+                              .size(width = 100.dp, height = 5.dp)
+                              .weight(0.6f),
+                         progress = statsToFloat(defense)
+                    )
+               }
+               Row(
+                    modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(bottom = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+               ) {
+                    Text(
+                         text = "Velocidad",
+                         textAlign = TextAlign.Start,
+                         modifier = Modifier.weight(0.3f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    Text(
+                         text = speed.toString(),
+                         textAlign = TextAlign.Center,
+                         modifier = Modifier.weight(0.1f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    LinearProgressIndicator(
+                         modifier = Modifier
+                              .size(width = 100.dp, height = 5.dp)
+                              .weight(0.6f),
+                         progress = statsToFloat(speed)
+                    )
+               }
+               Row(
+                    modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(bottom = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+               ) {
+                    Text(
+                         text = "At. Especial",
+                         textAlign = TextAlign.Start,
+                         modifier = Modifier.weight(0.3f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    Text(
+                         text = specialAttack.toString(),
+                         textAlign = TextAlign.Center,
+                         modifier = Modifier.weight(0.1f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    LinearProgressIndicator(
+                         modifier = Modifier
+                              .size(width = 100.dp, height = 5.dp)
+                              .weight(0.6f),
+                         progress = statsToFloat(specialAttack)
+                    )
+               }
+               Row(
+                    modifier = Modifier
+                         .fillMaxWidth()
+                         .padding(bottom = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+               ) {
+                    Text(
+                         text = "Def. Especial",
+                         textAlign = TextAlign.Start,
+                         modifier = Modifier.weight(0.3f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    Text(
+                         text = specialDefense.toString(),
+                         textAlign = TextAlign.Center,
+                         modifier = Modifier.weight(0.1f),
+                         color = Color.Black,
+                         fontSize = 14.sp
+                    )
+                    LinearProgressIndicator(
+                         modifier = Modifier
+                              .size(width = 100.dp, height = 5.dp)
+                              .weight(0.6f),
+                         progress = statsToFloat(specialDefense)
+                    )
+               }
+          }
+     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun Abilities(pokemonAbilities: List<PokemonAbility>) {
+     Card(
+          modifier = Modifier
+               .padding(10.dp)
+               .fillMaxWidth(),
+
+          colors = CardDefaults.cardColors(containerColor = Color.White)
+     ) {
+          Column(
+               horizontalAlignment = Alignment.CenterHorizontally,
+               modifier = Modifier.padding(20.dp),
+               verticalArrangement = Arrangement.Center
+          ) {
+               Text(
+                    text = "Habilidades",
+                    Modifier.padding(bottom = 20.dp),
+                    color = textItemColor,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+               )
+
+               pokemonAbilities.forEach {
+                    PokemonAbilityItem(it)
+               }
+          }
+     }
 }
 
 @Composable

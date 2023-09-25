@@ -207,15 +207,15 @@ fun RegionChips(regionList:List<PokemonGroupByRegion>,selectedPosition:MutableSt
 }
 
 @Composable
-fun PokemonItem(index: Int, pokemon: Pokemon, onItemselected: (Pokemon) ->Unit){
-    val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$index.png")
+fun PokemonItem(pokemon: Pokemon, onItemSelected: (Pokemon) ->Unit){
+    val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png")
 
     val radiusDp = 100.dp
     val density = LocalDensity.current.density
     val radiusPx = with(LocalDensity.current) { radiusDp.toPx() / density }
 
     Column( horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable {
-        onItemselected(pokemon)
+        onItemSelected(pokemon)
     }) {
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -268,9 +268,9 @@ fun PokemonItem(index: Int, pokemon: Pokemon, onItemselected: (Pokemon) ->Unit){
         }
         val pokemonText = buildAnnotatedString {
             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                append("#$index ")
+                append("#${pokemon.id} ")
             }
-            append(pokemon.name)
+            append(pokemon.name.replaceFirstChar { it.uppercase() })
         }
 
         Text(
@@ -335,7 +335,7 @@ fun PokemonGridList(
                             }
                         }
 
-                        PokemonItem(pokemon.id, pokemon){
+                        PokemonItem(pokemon){
                             navigationController.navigate("Pokemondetail/${it.id}/${it.name}")
                         }
                     }

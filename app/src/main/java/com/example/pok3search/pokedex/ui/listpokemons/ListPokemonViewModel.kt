@@ -18,7 +18,6 @@ class ListPokemonViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _pokemonList = MutableLiveData<List<PokemonGroupByRegion>>()
-
     val pokemonList:LiveData<List<PokemonGroupByRegion>> = _pokemonList
 
     fun getAllPokemons(){
