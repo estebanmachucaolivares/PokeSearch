@@ -20,3 +20,4 @@ data class Species(
     val name: String,
     val url: String
 )
+data class PokemonEvolutionUrlResponse(val url:String)
