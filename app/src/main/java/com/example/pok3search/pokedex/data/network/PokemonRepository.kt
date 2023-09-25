@@ -37,4 +37,8 @@ class PokemonRepository @Inject constructor(private val api:PokemonService)  {
         return res.map { it.toDomain() }
     }
 
+    suspend fun getPokemonTypes(pokemonId: Int):List<PokemonTypes>{
+        return api.getPokemonTypes(pokemonId).map { it.toDomain() }
+    }
+
 }

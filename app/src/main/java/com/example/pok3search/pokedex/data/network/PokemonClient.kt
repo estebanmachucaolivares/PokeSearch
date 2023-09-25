@@ -25,11 +25,11 @@ interface PokemonClient {
     @GET("pokemon-species/{id}/")
     suspend fun getPokemonDetails(@Path("id") id: Int):PokemonDescriptionResponse
     @GET("pokemon-species/{id}/")
-    suspend fun getPokemonEvolutionChain(@Path("id") id: Int):PokemonEvolutionsResponse
+    suspend fun getPokemonEvolutionChainUrl(@Path("id") id: Int):PokemonEvolutionsResponse
 
 
     @GET
-    fun getEvolutionChain(@Url url: String): Call<EvolutionChain>
+    fun getPokemonEvolutionChain(@Url url: String): Call<EvolutionChain>
 
     @GET("pokemon/{id}")
     suspend fun getPokemonStats(@Path("id") id: Int):PokemonStatsResponse
@@ -40,4 +40,10 @@ interface PokemonClient {
 
     @GET
     suspend fun getPokemonAbility(@Url url: String): PokemonAbilityResponse
+
+    @GET("pokemon/{id}")
+    suspend fun getPokemonTypesUrls(@Path("id") id: Int):PokemonTypeUrlResponse
+
+    @GET
+    suspend fun getPokemonTypes(@Url url: String): PokemonTypesName
 }

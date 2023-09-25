@@ -34,13 +34,9 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.pok3search.pokedex.domain.model.Pokemon
-import com.example.pok3search.pokedex.domain.model.PokemonAbility
-import com.example.pok3search.pokedex.domain.model.PokemonDescription
-import com.example.pok3search.pokedex.domain.model.PokemonStats
+import com.example.pok3search.pokedex.domain.model.*
 import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
-import com.example.pok3search.ui.theme.Primary
-import com.example.pok3search.ui.theme.textItemColor
+import com.example.pok3search.ui.theme.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +54,7 @@ fun PokemonDetail(
      val pokemonEvolutionChain:List<Pokemon> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
      val pokemonStats:List<PokemonStats> by detailPokemonViewModel.pokemonStats.observeAsState(initial = listOf())
      val pokemonAbilities:List<PokemonAbility> by detailPokemonViewModel.pokemonAbilities.observeAsState(initial = listOf())
+     val pokemonTypes:List<PokemonTypes> by detailPokemonViewModel.pokemonTypes.observeAsState(initial = listOf())
 
      val hp = pokemonStats.find { it.name =="hp" }?.baseStat ?: 0
      val attack = pokemonStats.find { it.name =="attack" }?.baseStat ?: 0
@@ -68,6 +65,7 @@ fun PokemonDetail(
 
      //Obtener información de Pokemon
      detailPokemonViewModel.getPokemonDescription(pokemon.id)
+     detailPokemonViewModel.getPokemonType(pokemon.id)
      detailPokemonViewModel.getPokemonEvolutionChain(pokemon.id)
      detailPokemonViewModel.getPokemonAbility(pokemon.id)
      detailPokemonViewModel.getPokemonStats(pokemon.id)
@@ -147,6 +145,28 @@ fun PokemonDetail(
                               )
                          }
 
+                    }
+
+                    Row(modifier = Modifier.fillMaxWidth(),
+                         horizontalArrangement =  Arrangement.Center,
+                         verticalAlignment = Alignment.CenterVertically
+                    ){
+
+                         pokemonTypes.forEach {
+                              val colorChips = colorByType(it.typeName)
+                              AssistChip(
+                                   modifier = Modifier.padding(4.dp),
+                                   label = { Text(text = it.typeName) },
+                                   onClick = {},
+                                   colors = AssistChipDefaults.assistChipColors(
+                                        labelColor = Color.White,
+                                        containerColor = colorChips
+                                   ),
+                                   border = AssistChipDefaults.assistChipBorder(
+                                        borderColor = colorChips
+                                   )
+                              )
+                         }
                     }
 
                     Card(
@@ -546,3 +566,31 @@ fun PokemonAbilityItem(pokemonAbility: PokemonAbility){
           )
      }
 }
+
+fun colorByType(type:String): Color{
+     val colorByType = mapOf(
+          "normal" to colorNormal,
+          "lucha" to colorLucha,
+          "volador" to colorVolador,
+          "veneno" to colorVeneno,
+          "tierra" to colorTierra,
+          "roca" to colorRoca,
+          "bicho" to colorBicho,
+          "fantasma" to colorFantasma,
+          "acero" to colorAcero,
+          "fuego" to colorFuego,
+          "agua" to colorAgua,
+          "planta" to colorPlanta,
+          "eléctrico" to colorElectrico,
+          "psíquico" to colorPsiquico,
+          "hielo" to colorHielo,
+          "dragón" to colorDragon,
+          "siniestro" to colorSiniestro,
+          "hada" to colorHada,
+          "desconocido" to colorDesconocido,
+          "sombra" to colorSombra
+     )
+     return colorByType[type.lowercase()] ?: textItemColor
+}
+
+

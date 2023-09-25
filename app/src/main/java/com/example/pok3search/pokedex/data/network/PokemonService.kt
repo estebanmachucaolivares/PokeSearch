@@ -65,8 +65,8 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
 
     suspend fun getEvolutionChainForPokemon(pokemonId: Int):List<PokemonWithIdResponse> = withContext(Dispatchers.IO){
 
-        val evolutionUrl = pokemonClient.getPokemonEvolutionChain(pokemonId)
-        val call = pokemonClient.getEvolutionChain(evolutionUrl.evolution_chain.url)
+        val evolutionUrl = pokemonClient.getPokemonEvolutionChainUrl(pokemonId)
+        val call = pokemonClient.getPokemonEvolutionChain(evolutionUrl.evolution_chain.url)
 
         try {
             val response = call.execute()
@@ -120,6 +120,24 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
         }
 
         return pokemonAbilityResult
+    }
+
+
+    suspend fun getPokemonTypes(pokemonId:Int):List<PokemonTypeResponse>{
+        val typesUrl = pokemonClient.getPokemonTypesUrls(pokemonId)
+
+        val pokemonTypesResult: MutableList<PokemonTypeResponse> = mutableListOf()
+
+        for(typeUrl in typesUrl.types ){
+            val types = pokemonClient.getPokemonTypes(typeUrl.type.url)
+
+            val pokemonTypeName = types.names.find{ it.language.name == "es" }?.name ?: types.names.find{ it.language.name == "en" }?.name ?:""
+
+            if(pokemonTypeName.isNotEmpty()){
+                pokemonTypesResult.add(PokemonTypeResponse(pokemonId,pokemonTypeName))
+            }
+        }
+        return pokemonTypesResult
     }
 
 }

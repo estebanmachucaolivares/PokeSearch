@@ -5,16 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pok3search.pokedex.domain.GetEvolutionChainUseCase
-import com.example.pok3search.pokedex.domain.GetPokemonAbilitiesUseCase
-import com.example.pok3search.pokedex.domain.GetPokemonDescriptionUseCase
-import com.example.pok3search.pokedex.domain.GetPokemonStatsUseCase
-import com.example.pok3search.pokedex.domain.model.Pokemon
-import com.example.pok3search.pokedex.domain.model.PokemonAbility
-import com.example.pok3search.pokedex.domain.model.PokemonDescription
-import com.example.pok3search.pokedex.domain.model.PokemonStats
+import com.example.pok3search.pokedex.domain.*
+import com.example.pok3search.pokedex.domain.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +17,8 @@ class DetailPokemonViewModel @Inject constructor(
     private val getPokemonDescriptionUseCase: GetPokemonDescriptionUseCase,
     private val getEvolutionChainUseCase: GetEvolutionChainUseCase,
     private val getPokemonStatsUseCase: GetPokemonStatsUseCase,
-    private val getPokemonAbilitiesUseCase: GetPokemonAbilitiesUseCase
+    private val getPokemonAbilitiesUseCase: GetPokemonAbilitiesUseCase,
+    private val getPokemonTypeUseCase: GetPokemonTypeUseCase
 ) : ViewModel() {
 
     private val _pokemonDescription = MutableLiveData<PokemonDescription>()
@@ -36,6 +32,9 @@ class DetailPokemonViewModel @Inject constructor(
 
     private val _pokemonAbilities = MutableLiveData<List<PokemonAbility>>()
     val pokemonAbilities : LiveData<List<PokemonAbility>> = _pokemonAbilities
+
+    private val _pokemonTypes = MutableLiveData<List<PokemonTypes>>()
+    val pokemonTypes : LiveData<List<PokemonTypes>> = _pokemonTypes
 
     fun getPokemonDescription(pokemonId:Int){
         viewModelScope.launch {
@@ -58,6 +57,12 @@ class DetailPokemonViewModel @Inject constructor(
     fun getPokemonAbility(pokemonId:Int){
         viewModelScope.launch {
             _pokemonAbilities.postValue(getPokemonAbilitiesUseCase.invoke(pokemonId))
+        }
+    }
+
+    fun getPokemonType(pokemonId:Int){
+        viewModelScope.launch {
+            _pokemonTypes.postValue(getPokemonTypeUseCase.invoke(pokemonId))
         }
     }
 
