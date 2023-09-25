@@ -2,9 +2,12 @@ package com.example.pok3search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.window.SplashScreen
+import android.window.SplashScreenView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -34,8 +37,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -45,26 +50,33 @@ import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
 import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.Pok3SearchTheme
+import com.example.pok3search.ui.theme.Primary
 import com.example.pok3search.ui.theme.mainBackgroundColor
 import com.example.pok3search.ui.theme.searchBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private val viewModel: SplashViewModel by viewModels()
     private val detailPokemonViewModel: DetailPokemonViewModel by viewModels()
     private val listPokemonViewModel: ListPokemonViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
+
+        splashScreen.setKeepOnScreenCondition { viewModel.isLoading.value }
+
         setContent {
             Pok3SearchTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScaffold(listPokemonViewModel,detailPokemonViewModel)
+                    MainScaffold(listPokemonViewModel, detailPokemonViewModel)
                 }
             }
         }
