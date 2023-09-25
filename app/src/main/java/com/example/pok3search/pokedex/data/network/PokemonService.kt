@@ -1,5 +1,6 @@
 package com.example.pok3search.pokedex.data.network
 
+import com.example.pok3search.pokedex.data.network.response.PokemonAbilityResultResponse
 import com.example.pok3search.pokedex.data.network.response.PokemonListItemResponse
 import com.example.pok3search.pokedex.data.network.response.PokemonWithIdResponse
 import com.example.pok3search.pokedex.data.network.response.PokemonWithIdGroupByRegionResponse
@@ -90,5 +91,24 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
     }
 
     suspend fun getPokemonStats(pokemonId: Int) = pokemonClient.getPokemonStats(pokemonId)
+
+    suspend fun getPokemonAbilities(porkemonId:Int):List<PokemonAbilityResultResponse>{
+        val generations = pokemonClient.getPokemonAbilityUrls(porkemonId)
+
+        val pokemonAbilityResult: MutableList<PokemonAbilityResultResponse> = mutableListOf()
+
+        for(abilityUrl in generations.abilities ){
+            val habilityList = pokemonClient.getPokemonAbility(abilityUrl.ability.url)
+
+            val name = habilityList.names.find { it.language.name == "es" }?.name
+            val description = habilityList.flavor_text_entries.find { it.language.name == "es" }?.flavor_text
+
+            if(!name.isNullOrEmpty() && !description.isNullOrEmpty()){
+                pokemonAbilityResult.add(PokemonAbilityResultResponse(name,description))
+            }
+        }
+
+        return pokemonAbilityResult
+    }
 
 }

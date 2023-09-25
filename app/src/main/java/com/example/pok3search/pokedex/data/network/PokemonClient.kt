@@ -30,4 +30,11 @@ interface PokemonClient {
 
     @GET("pokemon/{id}")
     suspend fun getPokemonStats(@Path("id") id: Int):PokemonStatsResponse
+
+
+    @GET("pokemon/{id}")
+    suspend fun getPokemonAbilityUrls(@Path("id") id: Int):PokemonAbilityUrlResponse
+
+    @GET
+    suspend fun getPokemonAbility(@Url url: String): PokemonAbilityResponse
 }

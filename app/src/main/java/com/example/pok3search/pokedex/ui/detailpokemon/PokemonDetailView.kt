@@ -4,7 +4,9 @@ package com.example.pok3search
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,6 +35,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.pok3search.pokedex.domain.model.Pokemon
+import com.example.pok3search.pokedex.domain.model.PokemonAbility
 import com.example.pok3search.pokedex.domain.model.PokemonDescription
 import com.example.pok3search.pokedex.domain.model.PokemonStats
 import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
@@ -59,6 +62,8 @@ fun PokemonDetail(
 
      val pokemonStats:List<PokemonStats> by detailPokemonViewModel.pokemonStats.observeAsState(initial = listOf())
 
+     val pokemonAbilities:List<PokemonAbility> by detailPokemonViewModel.pokemonAbilities.observeAsState(initial = listOf())
+
      val hp = pokemonStats.find { it.name =="hp" }?.baseStat ?: 0
      val attack = pokemonStats.find { it.name =="attack" }?.baseStat ?: 0
      val defense = pokemonStats.find { it.name =="defense" }?.baseStat ?: 0
@@ -73,6 +78,7 @@ fun PokemonDetail(
      }
 
      detailPokemonViewModel.getPokemonStats(pokemon.id)
+     detailPokemonViewModel.getPokemonAbility(pokemon.id)
 
      Scaffold(
           topBar = {
@@ -419,7 +425,11 @@ fun PokemonDetail(
 
                          colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(20.dp)) {
+                         Column(
+                              horizontalAlignment = Alignment.CenterHorizontally,
+                              modifier = Modifier.padding(20.dp),
+                              verticalArrangement = Arrangement.Center
+                         ) {
                               Text(
                                    text = "Habilidades",
                                    Modifier.padding(bottom = 20.dp),
@@ -427,40 +437,9 @@ fun PokemonDetail(
                                    fontWeight = FontWeight.Bold,
                                    textAlign = TextAlign.Center
                               )
-                              Column(modifier = Modifier
-                                   .fillMaxWidth()
-                                   .padding(bottom = 10.dp)) {
-                                   Text(
-                                        text = "Espesura",
-                                        color = textItemColor,
-                                        textAlign = TextAlign.Start,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = "Potencia los ataques de tipo\n" +
-                                                "planta en un apuro.",
-                                        textAlign = TextAlign.Start,
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
-                              }
 
-                              Column(modifier = Modifier
-                                   .fillMaxWidth()
-                                   .padding(bottom = 10.dp)) {
-                                   Text(
-                                        text = "Espesura",
-                                        color = textItemColor,
-                                        textAlign = TextAlign.Start,
-                                        fontSize = 14.sp
-                                   )
-                                   Text(
-                                        text = "Potencia los ataques de tipo\n" +
-                                                "planta en un apuro.",
-                                        textAlign = TextAlign.Start,
-                                        color = Color.Black,
-                                        fontSize = 14.sp
-                                   )
+                              pokemonAbilities.forEach {
+                                   PokemonAbilityItem(it)
                               }
                          }
                     }
@@ -553,5 +532,25 @@ private fun statsToFloat(stats: Int): Float {
           if (statsFloat > 1) 1f else statsFloat
      } catch (e: Exception) {
           0f
+     }
+}
+
+@Composable
+fun PokemonAbilityItem(pokemonAbility: PokemonAbility){
+     Column(modifier = Modifier
+          .fillMaxWidth()
+          .padding(bottom = 10.dp)) {
+          Text(
+               text = pokemonAbility.name,
+               color = textItemColor,
+               textAlign = TextAlign.Start,
+               fontSize = 14.sp
+          )
+          Text(
+               text = pokemonAbility.description,
+               textAlign = TextAlign.Start,
+               color = Color.Black,
+               fontSize = 14.sp
+          )
      }
 }
