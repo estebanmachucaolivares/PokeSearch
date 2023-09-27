@@ -7,10 +7,6 @@ import javax.inject.Inject
 
 class PokemonService @Inject constructor(private val pokemonClient:PokemonClient)  {
 
-    suspend fun getAllPokemons(): List<PokemonListItemResponse>{
-        return pokemonClient.getPokemonList(500).results
-    }
-
     suspend fun getAllPokemonWithRegion(): List<PokemonWithIdGroupByRegionResponse>{
         val generations = pokemonClient.getAllGenerations()
 

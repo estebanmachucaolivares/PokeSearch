@@ -5,11 +5,6 @@ import javax.inject.Inject
 
 class PokemonRepository @Inject constructor(private val api:PokemonService)  {
 
-    suspend fun getAllPokemnons():List<Pokemon>{
-        val res = api.getAllPokemons()
-        return res.map { it.toDomain() }
-    }
-
     suspend fun getAllPokemonWithRegion(): List<PokemonGroupByRegion> {
         return api.getAllPokemonWithRegion().map {
             PokemonGroupByRegion(
