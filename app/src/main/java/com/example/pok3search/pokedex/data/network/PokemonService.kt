@@ -60,7 +60,7 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
         val pokemonDescription = pokemonDescriptions.flavor_text_entries.find { it.language.name == "es" }?.flavor_text ?:
         pokemonDescriptions.flavor_text_entries.find { it.language.name == "en" }?.flavor_text ?:"Sin Información"
 
-        return DescriptionResponse(pokemonType,pokemonDescription)
+        return DescriptionResponse(pokemonId,pokemonType,pokemonDescription)
     }
 
     suspend fun getEvolutionChainForPokemon(pokemonId: Int):List<PokemonWithIdResponse> = withContext(Dispatchers.IO){
@@ -103,8 +103,8 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
 
     suspend fun getPokemonStats(pokemonId: Int) = pokemonClient.getPokemonStats(pokemonId)
 
-    suspend fun getPokemonAbilities(porkemonId:Int):List<PokemonAbilityResultResponse>{
-        val generations = pokemonClient.getPokemonAbilityUrls(porkemonId)
+    suspend fun getPokemonAbilities(pokemonId:Int):List<PokemonAbilityResultResponse>{
+        val generations = pokemonClient.getPokemonAbilityUrls(pokemonId)
 
         val pokemonAbilityResult: MutableList<PokemonAbilityResultResponse> = mutableListOf()
 
@@ -115,7 +115,7 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
             val description = habilityList.flavor_text_entries.find { it.language.name == "es" }?.flavor_text
 
             if(!name.isNullOrEmpty() && !description.isNullOrEmpty()){
-                pokemonAbilityResult.add(PokemonAbilityResultResponse(name,description))
+                pokemonAbilityResult.add(PokemonAbilityResultResponse(pokemonId,name,description))
             }
         }
 

@@ -13,4 +13,4 @@ data class AbilityTextEntries(val flavor_text:String, val language: PokemonLangu
 
 data class AbilityName(val language:PokemonLanguage,val name:String)
 
-data class PokemonAbilityResultResponse(val name:String = "",val description:String = "")
+data class PokemonAbilityResultResponse(val pokemonId: Int, val name:String = "",val description:String = "")

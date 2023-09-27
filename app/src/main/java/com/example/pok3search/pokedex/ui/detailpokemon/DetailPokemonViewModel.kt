@@ -67,7 +67,7 @@ class DetailPokemonViewModel @Inject constructor(
     }
 
     fun clearPokemonDetail() {
-        _pokemonDescription.value = PokemonDescription("","")
+        _pokemonDescription.value = PokemonDescription(0,"","")
         _pokemonEvolutionChain.value = emptyList()
         _pokemonStats.value = emptyList()
         _pokemonAbilities.value = emptyList()

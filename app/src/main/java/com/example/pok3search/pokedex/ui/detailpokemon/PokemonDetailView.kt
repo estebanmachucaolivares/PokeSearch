@@ -56,7 +56,7 @@ fun PokemonDetail(
           spec = LottieCompositionSpec.RawRes(R.raw.animation_background)// Reemplaza con la referencia a tu archivo JSON
      )
 
-     val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription("",""))
+     val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription(0,"",""))
      val pokemonEvolutionChain:List<Pokemon> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
      val pokemonStats:List<PokemonStats> by detailPokemonViewModel.pokemonStats.observeAsState(initial = listOf())
      val pokemonAbilities:List<PokemonAbility> by detailPokemonViewModel.pokemonAbilities.observeAsState(initial = listOf())

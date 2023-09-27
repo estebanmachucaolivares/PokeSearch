@@ -29,7 +29,7 @@ class PokemonRepository @Inject constructor(private val api:PokemonService)  {
 
     suspend fun getPokemonStats(pokemonId: Int):List<PokemonStats>{
         val res = api.getPokemonStats(pokemonId)
-        return res.stats.map { it.toDomain() }
+        return res.stats.map { it.toDomain(pokemonId) }
     }
 
     suspend fun getPokemonAbilities(pokemonId: Int):List<PokemonAbility>{
