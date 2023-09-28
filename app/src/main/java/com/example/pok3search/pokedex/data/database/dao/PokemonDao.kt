@@ -11,6 +11,6 @@ interface PokemonDao {
     fun getAllPokemon(): List<PokemonEntity>
 
     @Insert
-    suspend fun insertPokemon(pokemon: PokemonEntity)
+    suspend fun insertPokemon(pokemon: PokemonEntity): Long
 
 }

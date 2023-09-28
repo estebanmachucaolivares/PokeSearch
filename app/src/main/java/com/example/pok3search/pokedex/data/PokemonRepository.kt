@@ -1,24 +1,14 @@
 package com.example.pok3search.pokedex.data
 
-import com.example.pok3search.pokedex.data.database.dao.PokemonDao
-import com.example.pok3search.pokedex.data.database.dao.RegionDao
-import com.example.pok3search.pokedex.data.database.entities.PokemonEntity
-import com.example.pok3search.pokedex.data.database.entities.RegionEntity
-import com.example.pok3search.pokedex.data.network.PokemonService
 import com.example.pok3search.pokedex.domain.model.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
-import com.example.pok3search.pokedex.domain.Result
+import com.example.pok3search.pokedex.domain.datasource.LocalDataSource
 import com.example.pok3search.pokedex.domain.datasource.RemoteDataSource
-import kotlinx.coroutines.flow.map
+
 
 class PokemonRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
-    private val regionDao: RegionDao,
-    private val pokemonDao: PokemonDao
+    private val localDataSource: LocalDataSource,
 ) {
 
     /*val pokemonWithRegion: Flow<Result<List<PokemonGroupByRegion>>> =
