@@ -12,10 +12,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import com.example.pok3search.pokedex.domain.Result
+import com.example.pok3search.pokedex.domain.datasource.RemoteDataSource
 import kotlinx.coroutines.flow.map
 
 class PokemonRepository @Inject constructor(
-    private val api: PokemonService,
+    private val remoteDataSource: RemoteDataSource,
     private val regionDao: RegionDao,
     private val pokemonDao: PokemonDao
 ) {
@@ -33,11 +34,7 @@ class PokemonRepository @Inject constructor(
         }*/
 
     suspend fun getAllPokemonWithRegion(): List<PokemonGroupByRegion> {
-        return api.getAllPokemonWithRegion().map {
-            PokemonGroupByRegion(
-                it.region,
-                it.pokemonList.map { pokemonList -> pokemonList.toDomain() })
-        }
+        return remoteDataSource.getAllPokemonWithRegion()
     }
 
 
@@ -59,26 +56,23 @@ class PokemonRepository @Inject constructor(
     }*/
 
     suspend fun getPokemonDescription(pokemonId:Int): PokemonDescription{
-        return api.getPokemonDetails(pokemonId).toDomain()
+        return remoteDataSource.getPokemonDescription(pokemonId)
     }
 
     suspend fun getEvolutionChainForPokemon(pokemonId:Int):List<Pokemon>{
-        val res = api.getEvolutionChainForPokemon(pokemonId)
-        return res.map { it.toDomain() }
+        return remoteDataSource.getEvolutionChainForPokemon(pokemonId)
     }
 
     suspend fun getPokemonStats(pokemonId: Int):List<PokemonStats>{
-        val res = api.getPokemonStats(pokemonId)
-        return res.stats.map { it.toDomain(pokemonId) }
+        return remoteDataSource.getPokemonStats(pokemonId)
     }
 
     suspend fun getPokemonAbilities(pokemonId: Int):List<PokemonAbility>{
-        val res = api.getPokemonAbilities(pokemonId)
-        return res.map { it.toDomain() }
+        return remoteDataSource.getPokemonAbilities(pokemonId)
     }
 
     suspend fun getPokemonTypes(pokemonId: Int):List<PokemonTypes>{
-        return api.getPokemonTypes(pokemonId).map { it.toDomain() }
+        return remoteDataSource.getPokemonTypes(pokemonId)
     }
 
 }
