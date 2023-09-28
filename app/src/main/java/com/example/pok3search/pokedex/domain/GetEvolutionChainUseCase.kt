@@ -1,6 +1,6 @@
 package com.example.pok3search.pokedex.domain
 
-import com.example.pok3search.pokedex.data.network.PokemonRepository
+import com.example.pok3search.pokedex.data.PokemonRepository
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import javax.inject.Inject
 
