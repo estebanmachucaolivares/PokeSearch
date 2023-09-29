@@ -1,33 +1,34 @@
 package com.example.pok3search.pokedex.ui.listpokemons
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pok3search.pokedex.domain.GetPokemonWithRegionFromDatabaseUseCase
-import com.example.pok3search.pokedex.domain.GetPokemonWithRegionUsecase
 import com.example.pok3search.pokedex.domain.SavePokemonWithRegionUseCase
-import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
 import com.example.pok3search.pokedex.ui.PokemonWithRegionUiState
+import com.example.pok3search.pokedex.ui.PokemonWithRegionUiState.Success
+import com.example.pok3search.pokedex.ui.PokemonWithRegionUiState.Error
+import com.example.pok3search.pokedex.ui.PokemonWithRegionUiState.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class ListPokemonViewModel @Inject constructor(
-    private val getPokemonWithRegionUsecase: GetPokemonWithRegionUsecase,
-    private val getPokemonWithRegionFromDatabaseUseCase: GetPokemonWithRegionFromDatabaseUseCase
+    private val getPokemonWithRegionFromDatabaseUseCase: GetPokemonWithRegionFromDatabaseUseCase,
+    private val savePokemonWithRegionUseCase: SavePokemonWithRegionUseCase
 ) : ViewModel() {
 
-    //val uiState: StateFlow<PokemonWithRegionUiState> =
+    val pokemonWithRegionUiState: StateFlow<PokemonWithRegionUiState> =
+        getPokemonWithRegionFromDatabaseUseCase()
+            .map (::Success)
+            .catch { Error(it) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),Loading)
 
-    private val _pokemonList = MutableLiveData<List<PokemonGroupByRegion>>()
-    val pokemonList:LiveData<List<PokemonGroupByRegion>> = _pokemonList
-
-    fun getAllPokemons(){
+    fun getAllPokemon(){
         viewModelScope.launch {
-            _pokemonList.postValue(getPokemonWithRegionUsecase.invoke())
+            savePokemonWithRegionUseCase()
         }
     }
 }

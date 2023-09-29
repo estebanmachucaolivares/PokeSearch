@@ -21,6 +21,10 @@ class LocalDataSourceImpl @Inject constructor(
         return pokemonDao.insertPokemon(pokemon.toEntity(regionId)) > 0
     }
 
+    override suspend fun getCountOfPokemon(): Int{
+        return pokemonDao.getCountOfPokemon()
+    }
+
     override fun getAllPokemon(): List<Pokemon> {
         return pokemonDao.getAllPokemon().map { it.toDomain() }
     }

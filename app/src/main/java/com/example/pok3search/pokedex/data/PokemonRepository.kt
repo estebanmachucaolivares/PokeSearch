@@ -4,6 +4,7 @@ import com.example.pok3search.pokedex.domain.model.*
 import javax.inject.Inject
 import com.example.pok3search.pokedex.domain.datasource.LocalDataSource
 import com.example.pok3search.pokedex.domain.datasource.RemoteDataSource
+import kotlinx.coroutines.flow.Flow
 
 
 class PokemonRepository @Inject constructor(
@@ -11,39 +12,32 @@ class PokemonRepository @Inject constructor(
     private val localDataSource: LocalDataSource,
 ) {
 
-    /*val pokemonWithRegion: Flow<Result<List<PokemonGroupByRegion>>> =
-        regionDao.getRegionsWithPokemon().map {
-            it.map { regionWithPokemon ->
-                PokemonGroupByRegion(
-                    regionWithPokemon.region.name,
-                    regionWithPokemon.pokemonList.map { pokemonEntity ->
-                        pokemonEntity.toDomain()
-                    }
-                )
-            }
-        }*/
+    val pokemonWithRegion: Flow<List<PokemonGroupByRegion>> = localDataSource.getRegionsWithPokemon()
 
     suspend fun getAllPokemonWithRegion(): List<PokemonGroupByRegion> {
         return remoteDataSource.getAllPokemonWithRegion()
     }
 
 
-    /*suspend fun insertAllPokemonWithRegion(): Boolean {
+    suspend fun insertAllPokemonWithRegion(): Boolean {
         return try {
-            val pokemonWithRegion = api.getAllPokemonWithRegion()
+            if(localDataSource.getCountOfPokemon() == 0){
+                val pokemonWithRegion = remoteDataSource.getAllPokemonWithRegion()
 
-            pokemonWithRegion.forEach { region ->
-                val regionId = regionDao.insertRegion(RegionEntity(name = region.region))
-                region.pokemonList.forEach { pokemon ->
-                    pokemonDao.insertPokemon(PokemonEntity(name = pokemon.name, regionId = regionId))
+                pokemonWithRegion.forEach { region ->
+                    val regionId = localDataSource.insertRegion(Region(name = region.region))
+                    region.pokemonList.forEach { pokemon ->
+                        localDataSource.insertPokemon(pokemon = Pokemon(pokemon.id,pokemon.name), regionId = regionId)
+                    }
                 }
             }
 
             true // Operación exitosa
+
         } catch (e: Exception) {
             false // Ocurrió un error durante la operación
         }
-    }*/
+    }
 
     suspend fun getPokemonDescription(pokemonId:Int): PokemonDescription{
         return remoteDataSource.getPokemonDescription(pokemonId)

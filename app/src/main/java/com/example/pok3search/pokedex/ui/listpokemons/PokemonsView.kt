@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -22,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -31,17 +31,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.domain.model.PokemonGroupByRegion
+import com.example.pok3search.pokedex.ui.PokemonWithRegionUiState
 import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.*
 import kotlinx.coroutines.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class, DelicateCoroutinesApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController: NavHostController){
 
@@ -52,6 +59,25 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
     val coroutineScope = rememberCoroutineScope()
 
     val selectedPosition = remember { mutableStateOf(0) }
+
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    listPokemonViewModel.getAllPokemon()
+
+    val composition by rememberLottieComposition(
+        spec = LottieCompositionSpec.RawRes(R.raw.animation_background)
+    )
+
+    val pokemonWithRegionUiState by produceState<PokemonWithRegionUiState>(initialValue = PokemonWithRegionUiState.Loading,
+        key1 = lifecycle,
+        key2 =listPokemonViewModel
+    ){
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
+            listPokemonViewModel.pokemonWithRegionUiState.collect{
+                value =it
+            }
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -76,19 +102,6 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
             modifier = Modifier
                 .fillMaxSize()
         ){
-
-
-
-            listPokemonViewModel.getAllPokemons()
-            val pokemonList:List<PokemonGroupByRegion> by listPokemonViewModel.pokemonList.observeAsState(initial = listOf())
-
-            val filteredPokemonList = remember { mutableStateOf(pokemonList) }
-
-            LaunchedEffect(pokemonList) {
-                if(pokemonList.isNotEmpty()){
-                    filteredPokemonList.value = pokemonList
-                }
-            }
 
             var searchText by remember { mutableStateOf("") }
 
@@ -119,29 +132,57 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
                 }
             }
 
-            SearchBar(
-                modifier = Modifier.padding(10.dp),
-                searchText = searchText,
-                onSearchTextChanged = {
-                    searchText = it
-                    filterPokemonList(pokemonList, it, filteredPokemonList)
-                },
-                onSearchSubmit = { Log.d("search", "submit") },
-                onClearSearch = {
-                    searchText = ""
-                    filterPokemonList(pokemonList, "", filteredPokemonList)
+            when(pokemonWithRegionUiState){
+                is PokemonWithRegionUiState.Error -> {}
+                PokemonWithRegionUiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        LottieAnimation(
+                            composition = composition,
+                            iterations = LottieConstants.IterateForever,
+                            modifier = Modifier.size(300.dp)
+                        )
+                    }
                 }
-            )
 
-            RegionChips(pokemonList,selectedPosition) { newPosition ->
-                coroutineScope.launch {
-                    listState.scrollToItem(newPosition)
-                    //listState.animateScrollToItem(newPosition) TODO validar index actual y de destino para un maximo de 50 items para animar el scroll
+                is PokemonWithRegionUiState.Success -> {
+
+                     val pokemonList:List<PokemonGroupByRegion> = (pokemonWithRegionUiState as PokemonWithRegionUiState.Success).pokemonWithRegion
+
+                    val filteredPokemonList = remember { mutableStateOf(pokemonList) }
+
+                    LaunchedEffect(pokemonList) {
+                        if(pokemonList.isNotEmpty()){
+                            filteredPokemonList.value = pokemonList
+                        }
+                    }
+
+                    SearchBar(
+                        modifier = Modifier.padding(10.dp),
+                        searchText = searchText,
+                        onSearchTextChanged = {
+                            searchText = it
+                            filterPokemonList(pokemonList, it, filteredPokemonList)
+                        },
+                        onSearchSubmit = { Log.d("search", "submit") },
+                        onClearSearch = {
+                            searchText = ""
+                            filterPokemonList(pokemonList, "", filteredPokemonList)
+                        }
+                    )
+
+                    RegionChips(pokemonList,selectedPosition) { newPosition ->
+                        coroutineScope.launch {
+                            listState.scrollToItem(newPosition)
+                            //listState.animateScrollToItem(newPosition) TODO validar index actual y de destino para un maximo de 50 items para animar el scroll
+                        }
+                    }
+
+                    PokemonGridList(filteredPokemonList, listState,navigationController){
+                        showFab = it
+                    }
+
                 }
-            }
-
-            PokemonGridList(filteredPokemonList, listState,navigationController){
-                showFab = it
+                else -> {}
             }
         }
     }

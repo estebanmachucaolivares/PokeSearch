@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalDataSource {
     suspend fun insertPokemon(pokemon: Pokemon, regionId: Long): Boolean
+
+    suspend fun getCountOfPokemon(): Int
     fun getAllPokemon(): List<Pokemon>
     fun getAllRegions(): List<Region>
     suspend fun insertRegion(region: Region):Long

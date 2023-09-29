@@ -10,6 +10,9 @@ interface PokemonDao {
     @Query("SELECT * FROM pokemon")
     fun getAllPokemon(): List<PokemonEntity>
 
+    @Query("SELECT COUNT(*) FROM pokemon")
+    suspend fun getCountOfPokemon(): Int
+
     @Insert
     suspend fun insertPokemon(pokemon: PokemonEntity): Long
 
