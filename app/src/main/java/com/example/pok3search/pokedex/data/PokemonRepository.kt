@@ -1,5 +1,6 @@
 package com.example.pok3search.pokedex.data
 
+import com.example.pok3search.pokedex.data.database.entities.toEntity
 import com.example.pok3search.pokedex.domain.model.*
 import javax.inject.Inject
 import com.example.pok3search.pokedex.domain.datasource.LocalDataSource
@@ -40,7 +41,14 @@ class PokemonRepository @Inject constructor(
     }
 
     suspend fun getPokemonDescription(pokemonId:Int): PokemonDescription{
-        return remoteDataSource.getPokemonDescription(pokemonId)
+        val pokemonDescription = localDataSource.getPokemonDescription(pokemonId)
+        return if(pokemonDescription != null){
+            pokemonDescription
+        }else{
+            val pokemonDescriptionRemote = remoteDataSource.getPokemonDescription(pokemonId)
+            localDataSource.insertPokemonDescription(pokemonDescriptionRemote)
+            pokemonDescriptionRemote
+        }
     }
 
     suspend fun getEvolutionChainForPokemon(pokemonId:Int):List<Pokemon>{
