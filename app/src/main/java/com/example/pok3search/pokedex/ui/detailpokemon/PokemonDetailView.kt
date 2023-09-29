@@ -570,6 +570,18 @@ fun EvolutionItem(pokemon:Pokemon, isEnd: Boolean){
 
 }
 
+
+
+/**
+ * Convierte un valor entero en un valor de punto flotante.
+ *
+ * Esta función toma un valor entero `stats`, lo divide por 100 y devuelve un valor de punto flotante.
+ * Si el valor resultante es mayor que 1, se ajusta a 1. Si ocurre alguna excepción durante este proceso,
+ * la función devuelve 0.
+ *
+ * @param stats El valor entero de estadísticas que se va a convertir.
+ * @return El valor de punto flotante resultante, limitado en el rango [0, 1].
+ */
 private fun statsToFloat(stats: Int): Float {
      return try {
           val statsFloat = stats.toFloat() / 100
@@ -599,6 +611,14 @@ fun PokemonAbilityItem(pokemonAbility: PokemonAbility){
      }
 }
 
+
+
+/**
+ * Devuelve un color basado en el tipo de Pokémon proporcionado.
+ *
+ * @param type tipo de Pokémon como una cadena (por ejemplo, "agua").
+ * @return El color asociado con el tipo de Pokémon, o el color predeterminado si el tipo es desconocido.
+ */
 fun colorByType(type:String): Color{
      val colorByType = mapOf(
           "normal" to colorNormal,

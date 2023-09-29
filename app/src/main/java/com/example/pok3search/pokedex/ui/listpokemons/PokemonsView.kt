@@ -1,5 +1,6 @@
 package com.example.pok3search
 
+import SearchBar
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -192,7 +193,13 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
     }
 }
 
-// Función para filtrar la lista pokemonList
+
+/**
+ * Función para filtrar lista pokemonList
+ * @param pokemonList lista completa para filtrar
+ * @param filterText texto a buscar en la lista
+ * @param filteredPokemonList lista con filtor aplicado
+ */
 fun filterPokemonList(
     pokemonList: List<PokemonGroupByRegion>,
     filterText: String,
@@ -398,70 +405,12 @@ fun PokemonGridList(
     )
 }
 
+
+/**
+ * Función de extensión LazyGridScope para agregar un header un un LazyGrid
+ */
 fun LazyGridScope.header(
     content: @Composable LazyGridItemScope.() -> Unit
 ) {
     item(span = { GridItemSpan(this.maxLineSpan) }, content = content)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun PokemonView(){
-    val radiusDp = 100.dp
-    val density = LocalDensity.current.density
-    val radiusPx = with(LocalDensity.current) { radiusDp.toPx() / density }
-
-    Column( horizontalAlignment = Alignment.CenterHorizontally) {
-        Box {
-            Image(
-                painter = painterResource(id = R.drawable.pokemon_back),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.Center),
-                contentScale = ContentScale.Fit
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(shadowBack, Color.Transparent),
-                            center = Offset(110f, 110f), // El centro del degradado
-                            radius = radiusPx, // El radio del degradado en píxeles
-                            tileMode = TileMode.Clamp
-                        )
-                    )
-                    .align(Alignment.Center)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.pokemon_test_view),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(bottom = 5.dp)
-                    .size(60.dp)
-                    ,
-                contentScale = ContentScale.Fit
-            )
-
-
-
-        }
-        val pokemonText = buildAnnotatedString {
-            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                append("#1 ")
-            }
-            append("Bulbasaur")
-        }
-
-        Text(
-            text = pokemonText,
-            color = textItemColor,
-            fontSize = 12.sp
-        )
-    }
-
-
 }
