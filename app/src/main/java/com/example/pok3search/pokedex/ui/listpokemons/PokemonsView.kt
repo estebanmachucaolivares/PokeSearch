@@ -6,9 +6,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
@@ -54,7 +56,9 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
 
     var showFab by remember { mutableStateOf(false) }
 
-    val listState = rememberLazyGridState()
+    val pokemonListState = rememberLazyGridState()
+
+    val regionListState = rememberLazyListState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -84,8 +88,8 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
             if(showFab){
                 FloatingActionButton(onClick = {
                     coroutineScope.launch{
-                        listState.scrollToItem(0)
-                    // listState.animateScrollToItem(0)
+                        pokemonListState.scrollToItem(0)
+                        regionListState.animateScrollToItem(0)
                     }
                     selectedPosition.value = 0
                 },
@@ -170,14 +174,14 @@ fun MainScreen(listPokemonViewModel: ListPokemonViewModel, navigationController:
                         }
                     )
 
-                    RegionChips(pokemonList,selectedPosition) { newPosition ->
+                    RegionChips(pokemonList,selectedPosition, regionListState) { newPosition ->
                         coroutineScope.launch {
-                            listState.scrollToItem(newPosition)
+                            pokemonListState.scrollToItem(newPosition)
                             //listState.animateScrollToItem(newPosition) TODO validar index actual y de destino para un maximo de 50 items para animar el scroll
                         }
                     }
 
-                    PokemonGridList(filteredPokemonList, listState,navigationController){
+                    PokemonGridList(filteredPokemonList, pokemonListState,navigationController){
                         showFab = it
                     }
 
@@ -218,11 +222,17 @@ fun filterPokemonList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegionChips(regionList:List<PokemonGroupByRegion>,selectedPosition:MutableState<Int>, onRegionClick: (Int) -> Unit) {
+fun RegionChips(
+    regionList: List<PokemonGroupByRegion>,
+    selectedPosition: MutableState<Int>,
+    listState: LazyListState,
+    onRegionClick: (Int) -> Unit
+) {
 
     LazyRow(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        state = listState
     ) {
         itemsIndexed(regionList) { index,region ->
             val isSelected = index == selectedPosition.value

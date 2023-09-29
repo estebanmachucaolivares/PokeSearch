@@ -2,12 +2,9 @@ package com.example.pok3search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.window.SplashScreen
-import android.window.SplashScreenView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -37,7 +34,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -50,11 +46,9 @@ import com.example.pok3search.pokedex.domain.model.Pokemon
 import com.example.pok3search.pokedex.ui.detailpokemon.DetailPokemonViewModel
 import com.example.pok3search.pokedex.ui.listpokemons.ListPokemonViewModel
 import com.example.pok3search.ui.theme.Pok3SearchTheme
-import com.example.pok3search.ui.theme.Primary
 import com.example.pok3search.ui.theme.mainBackgroundColor
 import com.example.pok3search.ui.theme.searchBackgroundColor
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -76,7 +70,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScaffold(listPokemonViewModel, detailPokemonViewModel)
+                    MainNavigation(listPokemonViewModel, detailPokemonViewModel)
                 }
             }
         }
@@ -87,7 +81,7 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScaffold(listPokemonViewModel: ListPokemonViewModel,detailPokemonViewModel: DetailPokemonViewModel) {
+fun MainNavigation(listPokemonViewModel: ListPokemonViewModel, detailPokemonViewModel: DetailPokemonViewModel) {
 
     val navigationController = rememberNavController()
 
