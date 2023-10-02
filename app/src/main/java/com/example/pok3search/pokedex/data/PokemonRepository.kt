@@ -64,7 +64,35 @@ class PokemonRepository @Inject constructor(
     }
 
     suspend fun getPokemonTypes(pokemonId: Int):List<PokemonTypes>{
-        return remoteDataSource.getPokemonTypes(pokemonId)
+        val pokemonType =  localDataSource.getPokemonType(pokemonId)
+
+        return pokemonType.ifEmpty {
+            val pokemonTypeForApi = remoteDataSource.getPokemonTypes(pokemonId)
+
+            pokemonTypeForApi.forEach {
+                val type = localDataSource.getType(it.typeName)
+                if (type != null) {
+                    localDataSource.insertPokemonType(
+                        PokemonTypes(
+                            id = type.id,
+                            pokemonId = pokemonId
+                        )
+                    )
+                } else {
+                    val typeId = localDataSource.insertType(it)
+                    if (typeId > 0) {
+                        localDataSource.insertPokemonType(
+                            PokemonTypes(
+                                id = typeId,
+                                pokemonId = pokemonId
+                            )
+                        )
+                    }
+                }
+            }
+
+            pokemonTypeForApi
+        }
     }
 
 }

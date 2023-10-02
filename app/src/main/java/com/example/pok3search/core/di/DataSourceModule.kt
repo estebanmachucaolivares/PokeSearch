@@ -4,6 +4,7 @@ import com.example.pok3search.pokedex.data.database.LocalDataSourceImpl
 import com.example.pok3search.pokedex.data.database.dao.PokemonDao
 import com.example.pok3search.pokedex.data.database.dao.PokemonDescriptionDao
 import com.example.pok3search.pokedex.data.database.dao.RegionDao
+import com.example.pok3search.pokedex.data.database.dao.TypeDao
 import com.example.pok3search.pokedex.data.network.PokemonService
 import com.example.pok3search.pokedex.data.network.RemoteDataSourceImpl
 import com.example.pok3search.pokedex.domain.datasource.LocalDataSource
@@ -22,9 +23,10 @@ class DataSourceModule {
     fun provideLocalDataSource(
         regionDao: RegionDao,
         pokemonDao: PokemonDao,
-        pokemonDescriptionDao: PokemonDescriptionDao
+        pokemonDescriptionDao: PokemonDescriptionDao,
+        typeDao: TypeDao
     ): LocalDataSource {
-        return LocalDataSourceImpl(regionDao, pokemonDao, pokemonDescriptionDao)
+        return LocalDataSourceImpl(regionDao, pokemonDao, pokemonDescriptionDao,typeDao)
     }
 
     @Singleton

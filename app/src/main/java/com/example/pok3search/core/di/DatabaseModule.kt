@@ -6,6 +6,7 @@ import com.example.pok3search.pokedex.data.database.PokemonDatabase
 import com.example.pok3search.pokedex.data.database.dao.PokemonDao
 import com.example.pok3search.pokedex.data.database.dao.PokemonDescriptionDao
 import com.example.pok3search.pokedex.data.database.dao.RegionDao
+import com.example.pok3search.pokedex.data.database.dao.TypeDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +31,11 @@ class DatabaseModule {
     @Provides
     fun pokemonDescriptionDao(pokemonDatabase: PokemonDatabase):PokemonDescriptionDao{
         return pokemonDatabase.pokemonDescriptionDao()
+    }
+
+    @Provides
+    fun typeDao(pokemonDatabase: PokemonDatabase):TypeDao{
+        return pokemonDatabase.typeDao()
     }
 
     @Singleton
