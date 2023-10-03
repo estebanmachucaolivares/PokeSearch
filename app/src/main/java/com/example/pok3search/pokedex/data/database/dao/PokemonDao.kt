@@ -20,10 +20,4 @@ interface PokemonDao {
     @Insert
     suspend fun insertPokemon(pokemon: PokemonEntity): Long
 
-    @Query("SELECT * FROM pokemon_evolution WHERE pokemonId = :pokemonId")
-    suspend fun getPokemonEvolution(pokemonId: Int): List<PokemonEvolutionEntity>
-
-    @Insert
-    suspend fun insertPokemonEvolution(pokemonEvolution: PokemonEvolutionEntity): Long
-
 }

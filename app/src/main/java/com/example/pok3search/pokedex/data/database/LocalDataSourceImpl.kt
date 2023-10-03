@@ -1,10 +1,7 @@
 package com.example.pok3search.pokedex.data.database
 
 import android.database.sqlite.SQLiteConstraintException
-import com.example.pok3search.pokedex.data.database.dao.PokemonDao
-import com.example.pok3search.pokedex.data.database.dao.PokemonDescriptionDao
-import com.example.pok3search.pokedex.data.database.dao.RegionDao
-import com.example.pok3search.pokedex.data.database.dao.TypeDao
+import com.example.pok3search.pokedex.data.database.dao.*
 import com.example.pok3search.pokedex.data.database.entities.PokemonEvolutionEntity
 import com.example.pok3search.pokedex.data.database.entities.PokemonTypeCrossRef
 import com.example.pok3search.pokedex.data.database.entities.RegionWithPokemon
@@ -19,7 +16,8 @@ class LocalDataSourceImpl @Inject constructor(
     private val regionDao: RegionDao,
     private val pokemonDao: PokemonDao,
     private val pokemonDescriptionDao: PokemonDescriptionDao,
-    private val typeDao: TypeDao
+    private val typeDao: TypeDao,
+    private val pokemonEvolutionDao: PokemonEvolutionDao
 ) : LocalDataSource {
     override suspend fun insertPokemon(pokemon: Pokemon, regionId: Long): Boolean {
         return pokemonDao.insertPokemon(pokemon.toEntity(regionId)) > 0
@@ -98,7 +96,7 @@ class LocalDataSourceImpl @Inject constructor(
         level: Int
     ): Boolean {
         return try {
-            pokemonDao.insertPokemonEvolution(
+            pokemonEvolutionDao.insertPokemonEvolution(
                 PokemonEvolutionEntity(
                     pokemonId = pokemonId.toLong(),
                     evolutionTo = evolutionToPokemonId.toLong(),
@@ -112,7 +110,7 @@ class LocalDataSourceImpl @Inject constructor(
 
     override suspend fun getPokemonEvolution(pokemonId: Int): List<PokemonEvolutionChain> {
         val pokemonEvolutionChain = mutableListOf<PokemonEvolutionChain>()
-        val res =  pokemonDao.getPokemonEvolution(pokemonId)
+        val res =  pokemonEvolutionDao.getPokemonEvolution(pokemonId)
         res.forEach{
             val pokemon = pokemonDao.getPokemon(it.evolutionTo.toInt())
            if (pokemon != null){

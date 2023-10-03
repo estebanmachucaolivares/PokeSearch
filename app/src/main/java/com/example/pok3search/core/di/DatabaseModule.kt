@@ -3,10 +3,7 @@ package com.example.pok3search.core.di
 import android.content.Context
 import androidx.room.Room
 import com.example.pok3search.pokedex.data.database.PokemonDatabase
-import com.example.pok3search.pokedex.data.database.dao.PokemonDao
-import com.example.pok3search.pokedex.data.database.dao.PokemonDescriptionDao
-import com.example.pok3search.pokedex.data.database.dao.RegionDao
-import com.example.pok3search.pokedex.data.database.dao.TypeDao
+import com.example.pok3search.pokedex.data.database.dao.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,18 +21,23 @@ class DatabaseModule {
     }
 
     @Provides
-    fun pokemonRegionDao(pokemonDatabase: PokemonDatabase):PokemonDao{
+    fun providePokemonDao(pokemonDatabase: PokemonDatabase):PokemonDao{
         return pokemonDatabase.pokemonDao()
     }
 
     @Provides
-    fun pokemonDescriptionDao(pokemonDatabase: PokemonDatabase):PokemonDescriptionDao{
+    fun providePokemonDescriptionDao(pokemonDatabase: PokemonDatabase):PokemonDescriptionDao{
         return pokemonDatabase.pokemonDescriptionDao()
     }
 
     @Provides
-    fun typeDao(pokemonDatabase: PokemonDatabase):TypeDao{
+    fun provideTypeDao(pokemonDatabase: PokemonDatabase):TypeDao{
         return pokemonDatabase.typeDao()
+    }
+
+    @Provides
+    fun providePokemonEvolutionDao(pokemonDatabase: PokemonDatabase):PokemonEvolutionDao{
+        return pokemonDatabase.pokemonEvolutionDao()
     }
 
     @Singleton
