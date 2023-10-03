@@ -256,49 +256,51 @@ private fun Description(pokemonDescription: PokemonDescription) {
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun EvolutionChain(pokemonEvolutionChain: List<PokemonEvolutionChain>) {
-     Card(
-          modifier = Modifier
-               .padding(10.dp)
-               .fillMaxWidth(),
+     if(pokemonEvolutionChain.isNotEmpty()){
+          Card(
+               modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxWidth(),
 
-          colors = CardDefaults.cardColors(containerColor = Color.White)
-     ) {
-
-          Column(
-               modifier = Modifier.fillMaxWidth(),
-               horizontalAlignment = Alignment.CenterHorizontally,
-               verticalArrangement = Arrangement.Center
+               colors = CardDefaults.cardColors(containerColor = Color.White)
           ) {
-               Text(
-                    text = "Evoluciones",
-                    Modifier.padding(20.dp),
-                    color = textItemColor,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-               )
 
-               val pokemonEvolutionChainGroupByLevel = pokemonEvolutionChain.groupBy { it.level }
-
-               LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(bottom = 20.dp)
+               Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                ) {
+                    Text(
+                         text = "Evoluciones",
+                         Modifier.padding(20.dp),
+                         color = textItemColor,
+                         fontWeight = FontWeight.Bold,
+                         textAlign = TextAlign.Center
+                    )
 
-                    pokemonEvolutionChainGroupByLevel.forEach { (level,evolution) ->
+                    val pokemonEvolutionChainGroupByLevel = pokemonEvolutionChain.groupBy { it.level }
 
-                         item{
+                    LazyRow(
+                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                         horizontalArrangement = Arrangement.spacedBy(8.dp),
+                         modifier = Modifier.padding(bottom = 20.dp)
+                    ) {
 
-                              Column(verticalArrangement = Arrangement.Center) {
-                                   evolution.forEach {
-                                        EvolutionItem(it.pokemon, level == 1)
+                         pokemonEvolutionChainGroupByLevel.forEach { (level,evolution) ->
+
+                              item{
+
+                                   Column(verticalArrangement = Arrangement.Center) {
+                                        evolution.forEach {
+                                             EvolutionItem(it.pokemon, level == 1)
+                                        }
                                    }
+
                               }
-
                          }
+
+
                     }
-
-
                }
           }
      }

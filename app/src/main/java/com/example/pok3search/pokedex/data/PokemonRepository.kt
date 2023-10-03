@@ -56,11 +56,15 @@ class PokemonRepository @Inject constructor(
         return pokemonEvolutionChain.ifEmpty {
             val pokemonEvolutionChainApi = remoteDataSource.getEvolutionChainForPokemon(pokemonId)
 
-            pokemonEvolutionChainApi.forEach {
-                val insert = localDataSource.insertPokemonEvolution(pokemonId, it.pokemon.id, it.level)
-            }
+            if(pokemonEvolutionChainApi.size > 1){
+                pokemonEvolutionChainApi.forEach {
+                    localDataSource.insertPokemonEvolution(pokemonId, it.pokemon.id, it.level)
+                }
 
-            pokemonEvolutionChainApi
+                pokemonEvolutionChainApi
+            }else{
+                emptyList()
+            }
         }
     }
 
