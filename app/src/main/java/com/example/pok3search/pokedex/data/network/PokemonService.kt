@@ -77,13 +77,44 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
 
                     if (evolutionChain.chain.evolves_to.isNotEmpty()) {
 
-                        for (evolution in evolutionChain.chain.evolves_to) {
-                            val pokemonId = getPokemonIdForUrl(evolution.species.url)
-                            evolutionNames.add(PokemonEvolutionResponse(PokemonWithIdResponse(pokemonId, evolution.species.name),2))
-                            if (evolution.evolves_to.isNotEmpty()) {
-                                val name = evolution.evolves_to[0].species.name
-                                val pokemonId = getPokemonIdForUrl(evolution.evolves_to[0].species.url)
-                                evolutionNames.add(PokemonEvolutionResponse(PokemonWithIdResponse(pokemonId, name),3))
+                        for (evolution_1 in evolutionChain.chain.evolves_to) {
+
+                            evolutionNames.add(
+                                PokemonEvolutionResponse(
+                                    PokemonWithIdResponse(
+                                        getPokemonIdForUrl(evolution_1.species.url),
+                                        evolution_1.species.name
+                                    ), 2
+                                )
+                            )
+
+                            if (evolution_1.evolves_to.isNotEmpty()) {
+                                for (evolution_2 in evolution_1.evolves_to){
+
+                                    evolutionNames.add(
+                                        PokemonEvolutionResponse(
+                                            PokemonWithIdResponse(
+                                                getPokemonIdForUrl(evolution_2.species.url),
+                                                evolution_2.species.name
+                                            ),
+                                            3
+                                        )
+                                    )
+
+                                    if (evolution_2.evolves_to.isNotEmpty()){
+                                        for (evolution_3 in evolution_2.evolves_to){
+                                            evolutionNames.add(
+                                                PokemonEvolutionResponse(
+                                                    PokemonWithIdResponse(
+                                                        getPokemonIdForUrl(evolution_3.species.url),
+                                                        evolution_3.species.name
+                                                    ),
+                                                    4
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

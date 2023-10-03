@@ -118,7 +118,7 @@ class LocalDataSourceImpl @Inject constructor(
                pokemonEvolutionChain.add(PokemonEvolutionChain(pokemon.toDomain(),it.level))
            }
         }
-        return pokemonEvolutionChain
+        return pokemonEvolutionChain.sortedBy { it.level }
     }
 
     override suspend fun insertPokemonStats(pokemonStats: PokemonStats): Boolean {

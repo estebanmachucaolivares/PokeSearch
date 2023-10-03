@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -278,14 +277,28 @@ private fun EvolutionChain(pokemonEvolutionChain: List<PokemonEvolutionChain>) {
                     textAlign = TextAlign.Center
                )
 
+               val pokemonEvolutionChainGroupByLevel = pokemonEvolutionChain.groupBy { it.level }
+
                LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(bottom = 20.dp)
                ) {
-                    itemsIndexed(pokemonEvolutionChain) { index, item ->
-                         EvolutionItem(item.pokemon, index == pokemonEvolutionChain.lastIndex)
+
+                    pokemonEvolutionChainGroupByLevel.forEach { (level,evolution) ->
+
+                         item{
+
+                              Column(verticalArrangement = Arrangement.Center) {
+                                   evolution.forEach {
+                                        EvolutionItem(it.pokemon, level == 1)
+                                   }
+                              }
+
+                         }
                     }
+
+
                }
           }
      }
@@ -527,15 +540,22 @@ private fun Abilities(pokemonAbilities: List<PokemonAbility>) {
 }
 
 @Composable
-fun EvolutionItem(pokemon:Pokemon, isEnd: Boolean){
+fun EvolutionItem(pokemon:Pokemon, isFirst: Boolean){
      val painter = rememberAsyncImagePainter("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png")
 
      Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier.padding(bottom = 20.dp)
      ){
-          Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
+          if (!isFirst){
+               Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = ""
+               )
+          }
+
+          Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                if(painter.state is AsyncImagePainter.State.Error || painter.state is AsyncImagePainter.State.Empty){
                     Image(
                          painter = painterResource(id = R.drawable.pokeball_default_img),
@@ -562,12 +582,7 @@ fun EvolutionItem(pokemon:Pokemon, isEnd: Boolean){
                     fontSize = 12.sp
                )
           }
-          if (!isEnd){
-               Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = ""
-               )
-          }
+
      }
 
 }
