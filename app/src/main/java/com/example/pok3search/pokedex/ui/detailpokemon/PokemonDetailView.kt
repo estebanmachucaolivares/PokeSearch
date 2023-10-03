@@ -58,16 +58,9 @@ fun PokemonDetail(
 
      val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription(0,"",""))
      val pokemonEvolutionChain:List<PokemonEvolutionChain> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
-     val pokemonStats:List<PokemonStats> by detailPokemonViewModel.pokemonStats.observeAsState(initial = listOf())
+     val pokemonStats:PokemonStats by detailPokemonViewModel.pokemonStats.observeAsState(initial = PokemonStats())
      val pokemonAbilities:List<PokemonAbility> by detailPokemonViewModel.pokemonAbilities.observeAsState(initial = listOf())
      val pokemonTypes:List<PokemonTypes> by detailPokemonViewModel.pokemonTypes.observeAsState(initial = listOf())
-
-     val hp = pokemonStats.find { it.name =="hp" }?.baseStat ?: 0
-     val attack = pokemonStats.find { it.name =="attack" }?.baseStat ?: 0
-     val defense = pokemonStats.find { it.name =="defense" }?.baseStat ?: 0
-     val speed = pokemonStats.find { it.name =="speed" }?.baseStat ?: 0
-     val specialAttack = pokemonStats.find { it.name =="special-attack" }?.baseStat ?: 0
-     val specialDefense = pokemonStats.find { it.name =="special-defense" }?.baseStat ?: 0
 
      //Obtener información de Pokemon
      detailPokemonViewModel.getPokemonDescription(pokemon.id)
@@ -100,7 +93,14 @@ fun PokemonDetail(
 
                     EvolutionChain(pokemonEvolutionChain)
 
-                    Stats(hp, attack, defense, speed, specialAttack, specialDefense)
+                    Stats(
+                         pokemonStats.hp,
+                         pokemonStats.attack,
+                         pokemonStats.defense,
+                         pokemonStats.speed,
+                         pokemonStats.specialAttack,
+                         pokemonStats.specialDefense
+                    )
 
                     Abilities(pokemonAbilities)
                }
@@ -196,7 +196,9 @@ private fun MainImage(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TypeChips(pokemonTypes: List<PokemonTypes>) {
      Row(
-          modifier = Modifier.fillMaxWidth().height(35.dp),
+          modifier = Modifier
+               .fillMaxWidth()
+               .height(35.dp),
           horizontalArrangement = Arrangement.Center,
           verticalAlignment = Alignment.CenterVertically
      ) {

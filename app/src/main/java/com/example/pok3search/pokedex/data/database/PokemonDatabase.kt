@@ -26,4 +26,6 @@ abstract class PokemonDatabase:RoomDatabase() {
     abstract fun typeDao(): TypeDao
 
     abstract fun pokemonEvolutionDao(): PokemonEvolutionDao
+
+    abstract fun pokemonStatsDao():PokemonStatsDao
 }

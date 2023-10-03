@@ -72,8 +72,16 @@ class PokemonRepository @Inject constructor(
         }
     }
 
-    suspend fun getPokemonStats(pokemonId: Int):List<PokemonStats>{
-        return remoteDataSource.getPokemonStats(pokemonId)
+    suspend fun getPokemonStats(pokemonId: Int): PokemonStats {
+        val pokemonStats = localDataSource.getPokemonStats(pokemonId)
+
+        return if (pokemonStats != null) {
+            pokemonStats
+        } else {
+            val pokemonStatsApi = remoteDataSource.getPokemonStats(pokemonId)
+            localDataSource.insertPokemonStats(pokemonStatsApi)
+            pokemonStatsApi
+        }
     }
 
     suspend fun getPokemonAbilities(pokemonId: Int):List<PokemonAbility>{

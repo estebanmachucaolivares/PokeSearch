@@ -2,6 +2,7 @@ package com.example.pok3search.pokedex.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.pok3search.pokedex.domain.model.PokemonStats
 
 @Entity(
     tableName = "pokemon_stats")
@@ -15,5 +16,8 @@ data class PokemonStatsEntity(
     val specialAttack: Int,
     val specialDefense: Int,
 )
+
+fun PokemonStats.toEntity() =
+    PokemonStatsEntity(id, hp, attack, defense, speed, specialAttack, specialDefense)
 
 

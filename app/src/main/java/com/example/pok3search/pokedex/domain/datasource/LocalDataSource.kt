@@ -24,4 +24,8 @@ interface LocalDataSource {
     suspend fun insertPokemonEvolution(pokemonId: Int, evolutionToPokemonId: Int, level: Int): Boolean
     suspend fun getPokemonEvolution(pokemonId: Int): List<PokemonEvolutionChain>
 
+    suspend fun insertPokemonStats(pokemonStats: PokemonStats): Boolean
+    suspend fun getPokemonStats(pokemonId: Int): PokemonStats?
+
+
 }

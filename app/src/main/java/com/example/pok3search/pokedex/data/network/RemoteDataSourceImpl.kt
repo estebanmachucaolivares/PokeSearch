@@ -25,9 +25,17 @@ class RemoteDataSourceImpl @Inject constructor(private val api: PokemonService) 
         return res.map {PokemonEvolutionChain(it.pokemonResponse.toDomain(),it.level) }
     }
 
-    override suspend fun getPokemonStats(pokemonId: Int): List<PokemonStats> {
+    override suspend fun getPokemonStats(pokemonId: Int): PokemonStats {
         val res = api.getPokemonStats(pokemonId)
-        return res.stats.map { it.toDomain(pokemonId) }
+
+        val hp = res.stats.find { it.stat.name =="hp" }?.base_stat?.toInt() ?: 0
+        val attack = res.stats.find { it.stat.name =="attack" }?.base_stat?.toInt() ?: 0
+        val defense = res.stats.find { it.stat.name =="defense" }?.base_stat?.toInt() ?: 0
+        val speed = res.stats.find { it.stat.name =="speed" }?.base_stat?.toInt() ?: 0
+        val specialAttack = res.stats.find { it.stat.name =="special-attack" }?.base_stat?.toInt() ?: 0
+        val specialDefense = res.stats.find{ it.stat.name =="special-defense" }?.base_stat?.toInt() ?: 0
+
+        return PokemonStats(pokemonId.toLong(),hp,attack,defense,speed,specialAttack,specialDefense)
     }
 
     override suspend fun getPokemonAbilities(pokemonId: Int): List<PokemonAbility> {

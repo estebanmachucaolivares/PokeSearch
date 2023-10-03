@@ -17,7 +17,8 @@ class LocalDataSourceImpl @Inject constructor(
     private val pokemonDao: PokemonDao,
     private val pokemonDescriptionDao: PokemonDescriptionDao,
     private val typeDao: TypeDao,
-    private val pokemonEvolutionDao: PokemonEvolutionDao
+    private val pokemonEvolutionDao: PokemonEvolutionDao,
+    private val pokemonStatsDao: PokemonStatsDao
 ) : LocalDataSource {
     override suspend fun insertPokemon(pokemon: Pokemon, regionId: Long): Boolean {
         return pokemonDao.insertPokemon(pokemon.toEntity(regionId)) > 0
@@ -118,5 +119,19 @@ class LocalDataSourceImpl @Inject constructor(
            }
         }
         return pokemonEvolutionChain
+    }
+
+    override suspend fun insertPokemonStats(pokemonStats: PokemonStats): Boolean {
+        return try {
+            pokemonStatsDao.insertPokemonStats(
+                pokemonStats.toEntity()
+            ) > 0
+        } catch (e: SQLiteConstraintException) {
+            false
+        }
+    }
+
+    override suspend fun getPokemonStats(pokemonId: Int): PokemonStats? {
+        return pokemonStatsDao.getPokemonStats(pokemonId)?.toDomain()
     }
 }

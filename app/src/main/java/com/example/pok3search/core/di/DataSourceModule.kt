@@ -22,9 +22,17 @@ class DataSourceModule {
         pokemonDao: PokemonDao,
         pokemonDescriptionDao: PokemonDescriptionDao,
         typeDao: TypeDao,
-        pokemonEvolutionDao: PokemonEvolutionDao
+        pokemonEvolutionDao: PokemonEvolutionDao,
+        pokemonStatsDao: PokemonStatsDao
     ): LocalDataSource {
-        return LocalDataSourceImpl(regionDao, pokemonDao, pokemonDescriptionDao,typeDao,pokemonEvolutionDao)
+        return LocalDataSourceImpl(
+            regionDao,
+            pokemonDao,
+            pokemonDescriptionDao,
+            typeDao,
+            pokemonEvolutionDao,
+            pokemonStatsDao
+        )
     }
 
     @Singleton
