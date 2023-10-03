@@ -57,7 +57,7 @@ fun PokemonDetail(
      )
 
      val pokemonDescription:PokemonDescription by detailPokemonViewModel.pokemonDescription.observeAsState(initial = PokemonDescription(0,"",""))
-     val pokemonEvolutionChain:List<Pokemon> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
+     val pokemonEvolutionChain:List<PokemonEvolutionChain> by detailPokemonViewModel.pokemonEvolutionChain.observeAsState(initial = listOf())
      val pokemonStats:List<PokemonStats> by detailPokemonViewModel.pokemonStats.observeAsState(initial = listOf())
      val pokemonAbilities:List<PokemonAbility> by detailPokemonViewModel.pokemonAbilities.observeAsState(initial = listOf())
      val pokemonTypes:List<PokemonTypes> by detailPokemonViewModel.pokemonTypes.observeAsState(initial = listOf())
@@ -254,7 +254,7 @@ private fun Description(pokemonDescription: PokemonDescription) {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun EvolutionChain(pokemonEvolutionChain: List<Pokemon>) {
+private fun EvolutionChain(pokemonEvolutionChain: List<PokemonEvolutionChain>) {
      Card(
           modifier = Modifier
                .padding(10.dp)
@@ -282,7 +282,7 @@ private fun EvolutionChain(pokemonEvolutionChain: List<Pokemon>) {
                     modifier = Modifier.padding(bottom = 20.dp)
                ) {
                     itemsIndexed(pokemonEvolutionChain) { index, item ->
-                         EvolutionItem(item, index == pokemonEvolutionChain.lastIndex)
+                         EvolutionItem(item.pokemon, index == pokemonEvolutionChain.lastIndex)
                     }
                }
           }

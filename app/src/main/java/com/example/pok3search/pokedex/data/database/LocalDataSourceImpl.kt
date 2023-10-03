@@ -5,6 +5,7 @@ import com.example.pok3search.pokedex.data.database.dao.PokemonDao
 import com.example.pok3search.pokedex.data.database.dao.PokemonDescriptionDao
 import com.example.pok3search.pokedex.data.database.dao.RegionDao
 import com.example.pok3search.pokedex.data.database.dao.TypeDao
+import com.example.pok3search.pokedex.data.database.entities.PokemonEvolutionEntity
 import com.example.pok3search.pokedex.data.database.entities.PokemonTypeCrossRef
 import com.example.pok3search.pokedex.data.database.entities.RegionWithPokemon
 import com.example.pok3search.pokedex.data.database.entities.toEntity
@@ -28,11 +29,11 @@ class LocalDataSourceImpl @Inject constructor(
         return pokemonDao.getCountOfPokemon()
     }
 
-    override fun getAllPokemon(): List<Pokemon> {
+    override suspend fun getAllPokemon(): List<Pokemon> {
         return pokemonDao.getAllPokemon().map { it.toDomain() }
     }
 
-    override fun getAllRegions(): List<Region> {
+    override suspend fun getAllRegions(): List<Region> {
         return regionDao.getAllRegions().map { it.toDomain() }
     }
 
@@ -89,5 +90,35 @@ class LocalDataSourceImpl @Inject constructor(
 
     override suspend fun getPokemonType(pokemonId: Int): List<PokemonTypes> {
         return typeDao.getTypesForPokemon(pokemonId.toLong()).map { it.toDomain() }
+    }
+
+    override suspend fun insertPokemonEvolution(
+        pokemonId: Int,
+        evolutionToPokemonId: Int,
+        level: Int
+    ): Boolean {
+        return try {
+            pokemonDao.insertPokemonEvolution(
+                PokemonEvolutionEntity(
+                    pokemonId = pokemonId.toLong(),
+                    evolutionTo = evolutionToPokemonId.toLong(),
+                    level = level
+                )
+            ) > 0
+        } catch (e: SQLiteConstraintException) {
+            false
+        }
+    }
+
+    override suspend fun getPokemonEvolution(pokemonId: Int): List<PokemonEvolutionChain> {
+        val pokemonEvolutionChain = mutableListOf<PokemonEvolutionChain>()
+        val res =  pokemonDao.getPokemonEvolution(pokemonId)
+        res.forEach{
+            val pokemon = pokemonDao.getPokemon(it.evolutionTo.toInt())
+           if (pokemon != null){
+               pokemonEvolutionChain.add(PokemonEvolutionChain(pokemon.toDomain(),it.level))
+           }
+        }
+        return pokemonEvolutionChain
     }
 }

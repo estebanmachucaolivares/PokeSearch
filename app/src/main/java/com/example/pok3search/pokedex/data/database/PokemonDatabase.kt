@@ -9,7 +9,14 @@ import com.example.pok3search.pokedex.data.database.dao.TypeDao
 import com.example.pok3search.pokedex.data.database.entities.*
 
 @Database(
-    entities = [PokemonEntity::class, RegionEntity::class, PokemonDescriptionEntity::class, TypeEntity::class, PokemonTypeCrossRef::class],
+    entities =
+    [PokemonEntity::class,
+        RegionEntity::class,
+        PokemonDescriptionEntity::class,
+        TypeEntity::class,
+        PokemonTypeCrossRef::class,
+        PokemonEvolutionEntity::class
+    ],
     version = 1
 )
 abstract class PokemonDatabase:RoomDatabase() {

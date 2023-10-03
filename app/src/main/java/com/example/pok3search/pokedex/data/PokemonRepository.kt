@@ -1,5 +1,6 @@
 package com.example.pok3search.pokedex.data
 
+import android.util.Log
 import com.example.pok3search.pokedex.data.database.entities.toEntity
 import com.example.pok3search.pokedex.domain.model.*
 import javax.inject.Inject
@@ -51,8 +52,24 @@ class PokemonRepository @Inject constructor(
         }
     }
 
-    suspend fun getEvolutionChainForPokemon(pokemonId:Int):List<Pokemon>{
-        return remoteDataSource.getEvolutionChainForPokemon(pokemonId)
+    suspend fun getEvolutionChainForPokemon(pokemonId: Int): List<PokemonEvolutionChain> {
+        val pokemonEvolutionChain = localDataSource.getPokemonEvolution(pokemonId)
+        Log.d("evolucion", "pokemonEvolutionChain $pokemonEvolutionChain")
+        return pokemonEvolutionChain.ifEmpty {
+
+            Log.d("evolucion", "ifEmpty")
+            val pokemonEvolutionChainApi = remoteDataSource.getEvolutionChainForPokemon(pokemonId)
+
+            Log.d("evolucion", "ifEmpty $pokemonEvolutionChainApi")
+            pokemonEvolutionChainApi.forEach {
+                Log.d("evolucion", "forEach ${it.pokemon}")
+
+                val insert = localDataSource.insertPokemonEvolution(pokemonId, it.pokemon.id, it.level)
+                Log.d("evolucion", "insert $insert")
+            }
+
+            pokemonEvolutionChainApi
+        }
     }
 
     suspend fun getPokemonStats(pokemonId: Int):List<PokemonStats>{

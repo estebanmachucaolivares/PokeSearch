@@ -1,5 +1,6 @@
 package com.example.pok3search.pokedex.data.network
 
+import android.util.Log
 import com.example.pok3search.pokedex.data.network.response.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -59,7 +60,7 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
         return DescriptionResponse(pokemonId,pokemonType,pokemonDescription)
     }
 
-    suspend fun getEvolutionChainForPokemon(pokemonId: Int):List<PokemonWithIdResponse> = withContext(Dispatchers.IO){
+    suspend fun getEvolutionChainForPokemon(pokemonId: Int):List<PokemonEvolutionResponse> = withContext(Dispatchers.IO){
 
         val evolutionUrl = pokemonClient.getPokemonEvolutionChainUrl(pokemonId)
         val call = pokemonClient.getPokemonEvolutionChain(evolutionUrl.evolution_chain.url)
@@ -68,20 +69,21 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
             val response = call.execute()
             if (response.isSuccessful) {
                 val evolutionChain = response.body()
-                val evolutionNames = mutableListOf<PokemonWithIdResponse>()
+                val evolutionNames = mutableListOf<PokemonEvolutionResponse>()
 
                 if (evolutionChain != null) {
                     val pokemonId = getPokemonIdForUrl(evolutionChain.chain.species.url)
-                    evolutionNames.add(PokemonWithIdResponse(pokemonId, evolutionChain.chain.species.name))
+                    evolutionNames.add(PokemonEvolutionResponse(PokemonWithIdResponse(pokemonId, evolutionChain.chain.species.name),1))
 
                     if (evolutionChain.chain.evolves_to.isNotEmpty()) {
+
                         for (evolution in evolutionChain.chain.evolves_to) {
                             val pokemonId = getPokemonIdForUrl(evolution.species.url)
-                            evolutionNames.add(PokemonWithIdResponse(pokemonId, evolution.species.name))
+                            evolutionNames.add(PokemonEvolutionResponse(PokemonWithIdResponse(pokemonId, evolution.species.name),2))
                             if (evolution.evolves_to.isNotEmpty()) {
                                 val name = evolution.evolves_to[0].species.name
                                 val pokemonId = getPokemonIdForUrl(evolution.evolves_to[0].species.url)
-                                evolutionNames.add(PokemonWithIdResponse(pokemonId, name))
+                                evolutionNames.add(PokemonEvolutionResponse(PokemonWithIdResponse(pokemonId, name),3))
                             }
                         }
                     }
@@ -96,6 +98,7 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
             emptyList()
         }
     }
+
 
     suspend fun getPokemonStats(pokemonId: Int) = pokemonClient.getPokemonStats(pokemonId)
 

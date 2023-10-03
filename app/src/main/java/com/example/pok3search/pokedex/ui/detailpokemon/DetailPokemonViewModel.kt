@@ -24,8 +24,8 @@ class DetailPokemonViewModel @Inject constructor(
     private val _pokemonDescription = MutableLiveData<PokemonDescription>()
     val pokemonDescription: LiveData<PokemonDescription> = _pokemonDescription
 
-    private val _pokemonEvolutionChain = MutableLiveData<List<Pokemon>>()
-    val pokemonEvolutionChain : LiveData<List<Pokemon>> = _pokemonEvolutionChain
+    private val _pokemonEvolutionChain = MutableLiveData<List<PokemonEvolutionChain>>()
+    val pokemonEvolutionChain : LiveData<List<PokemonEvolutionChain>> = _pokemonEvolutionChain
 
     private val _pokemonStats = MutableLiveData<List<PokemonStats>>()
     val pokemonStats : LiveData<List<PokemonStats>> = _pokemonStats
