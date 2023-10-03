@@ -1,6 +1,5 @@
 package com.example.pok3search.pokedex.data.network
 
-import android.util.Log
 import com.example.pok3search.pokedex.domain.datasource.RemoteDataSource
 import com.example.pok3search.pokedex.domain.model.*
 import javax.inject.Inject
@@ -21,7 +20,6 @@ class RemoteDataSourceImpl @Inject constructor(private val api: PokemonService) 
 
     override suspend fun getEvolutionChainForPokemon(pokemonId: Int): List<PokemonEvolutionChain> {
         val res = api.getEvolutionChainForPokemon(pokemonId)
-        Log.d("evoluciones", "evoluciones $res")
         return res.map {PokemonEvolutionChain(it.pokemonResponse.toDomain(),it.level) }
     }
 

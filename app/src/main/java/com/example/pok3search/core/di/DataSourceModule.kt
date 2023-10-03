@@ -23,7 +23,8 @@ class DataSourceModule {
         pokemonDescriptionDao: PokemonDescriptionDao,
         typeDao: TypeDao,
         pokemonEvolutionDao: PokemonEvolutionDao,
-        pokemonStatsDao: PokemonStatsDao
+        pokemonStatsDao: PokemonStatsDao,
+        pokemonAbilityDao: PokemonAbilityDao
     ): LocalDataSource {
         return LocalDataSourceImpl(
             regionDao,
@@ -31,7 +32,8 @@ class DataSourceModule {
             pokemonDescriptionDao,
             typeDao,
             pokemonEvolutionDao,
-            pokemonStatsDao
+            pokemonStatsDao,
+            pokemonAbilityDao
         )
     }
 

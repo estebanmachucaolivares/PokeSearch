@@ -13,7 +13,8 @@ import com.example.pok3search.pokedex.data.database.entities.*
         TypeEntity::class,
         PokemonTypeCrossRef::class,
         PokemonEvolutionEntity::class,
-        PokemonStatsEntity::class
+        PokemonStatsEntity::class,
+        PokemonAbilityEntity::class
     ],
     version = 1
 )
@@ -28,4 +29,6 @@ abstract class PokemonDatabase:RoomDatabase() {
     abstract fun pokemonEvolutionDao(): PokemonEvolutionDao
 
     abstract fun pokemonStatsDao():PokemonStatsDao
+
+    abstract fun pokemonAbilityDao():PokemonAbilityDao
 }

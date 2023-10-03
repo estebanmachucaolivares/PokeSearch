@@ -12,5 +12,5 @@ interface PokemonStatsDao {
     suspend fun getPokemonStats(pokemonId: Int): PokemonStatsEntity?
 
     @Insert
-    suspend fun insertPokemonStats(pokemonStats: PokemonStatsEntity): Long
+    suspend fun insertPokemonStats(pokemon: PokemonStatsEntity): Long
 }

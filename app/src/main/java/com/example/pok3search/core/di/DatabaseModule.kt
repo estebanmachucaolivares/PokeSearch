@@ -45,6 +45,11 @@ class DatabaseModule {
         return pokemonDatabase.pokemonStatsDao()
     }
 
+    @Provides
+    fun providePokemonAbilityDao(pokemonDatabase: PokemonDatabase):PokemonAbilityDao{
+        return pokemonDatabase.pokemonAbilityDao()
+    }
+
     @Singleton
     @Provides
     fun providePokemonDatabase(@ApplicationContext appContext:Context):PokemonDatabase{

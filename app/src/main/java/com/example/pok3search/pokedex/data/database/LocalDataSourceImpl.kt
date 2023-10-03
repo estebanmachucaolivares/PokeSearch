@@ -1,6 +1,7 @@
 package com.example.pok3search.pokedex.data.database
 
 import android.database.sqlite.SQLiteConstraintException
+import android.util.Log
 import com.example.pok3search.pokedex.data.database.dao.*
 import com.example.pok3search.pokedex.data.database.entities.PokemonEvolutionEntity
 import com.example.pok3search.pokedex.data.database.entities.PokemonTypeCrossRef
@@ -18,7 +19,8 @@ class LocalDataSourceImpl @Inject constructor(
     private val pokemonDescriptionDao: PokemonDescriptionDao,
     private val typeDao: TypeDao,
     private val pokemonEvolutionDao: PokemonEvolutionDao,
-    private val pokemonStatsDao: PokemonStatsDao
+    private val pokemonStatsDao: PokemonStatsDao,
+    private val pokemonAbilityDao: PokemonAbilityDao
 ) : LocalDataSource {
     override suspend fun insertPokemon(pokemon: Pokemon, regionId: Long): Boolean {
         return pokemonDao.insertPokemon(pokemon.toEntity(regionId)) > 0
@@ -133,5 +135,19 @@ class LocalDataSourceImpl @Inject constructor(
 
     override suspend fun getPokemonStats(pokemonId: Int): PokemonStats? {
         return pokemonStatsDao.getPokemonStats(pokemonId)?.toDomain()
+    }
+
+    override suspend fun insertPokemonAbility(pokemonAbility: PokemonAbility): Boolean {
+        return try {
+            pokemonAbilityDao.insertPokemonAbility(
+                pokemonAbility.toEntity()
+            ) > 0
+        } catch (e: SQLiteConstraintException) {
+            false
+        }
+    }
+
+    override suspend fun getPokemonAbility(pokemonId: Int): List<PokemonAbility> {
+        return pokemonAbilityDao.getPokemonAbility(pokemonId).map { it.toDomain() }
     }
 }
