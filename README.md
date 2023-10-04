@@ -30,33 +30,34 @@
 
 ## Vista Previa de App
 
-    SplashScreen
+Splash Screen
 
-    ![Mi Imagen](img/SplashScreen.jpeg)
+<img src="img/SplashScreen.jpeg" alt="splash" style="height:600px;"> 
 
-    Listado de Pokemones Agrupado por Regiones
+<br><br>
 
-    ![kanto](img/01 - kanto.jpeg)
+Listado de Pokemones Agrupado por Regiones
 
-    ![jotho](img/02 - Jotho.jpeg)
+<img src="img/kanto.jpg" alt="kanto" style="height:600px;"> <img src="img/Jotho.jpg" alt="kanto" style="height:600px;"> <img src="img/hoenn.jpg" alt="kanto" style="height:600px;">  
 
-    ![hoenn](img/03 - Hoenn.jpeg)
+<br><br>
 
-    Detalles de Pokémon - Imagen, tipo, descripción y cadea evolutiva de Pokémon
+Detalles de Pokémon - Imagen, tipo, descripción y cadena evolutiva de Pokémon
 
-    ![hoenn](img/Detalle Pokemon - Image - Descripción y evoluciones.jpg)
+<img src="img/detalle-1.jpg" alt="detalle 1" style="height:600px;"> 
 
-    Detalles de Pokémon - Estadísticas y habilidades
+<br><br>
 
-    ![hoenn](img/Detalle Pokemon - estadisticas y habilidades.jpg)
+Detalles de Pokémon - Estadísticas y habilidades
 
+<img src="img/detalle-2.jpg" alt="detalle 2" style="height:600px;"> 
 
-    Previews
+<br><br>
 
-    Filtro por región y detalle de Pókemon
+Demostraciones
 
-    [![IMAGE ALT TEXT HERE](filtro por region)](https://youtube.com/shorts/Ip83_2qw9m0?feature=share)
+Filtro por región y detalle de Pókemon
 
-    Búsqueda  por nombre o número de Pokedex de Pokémon
+[![Filtro por región](https://img.youtube.com/vi/Ip83_2qw9m0/0.jpg)](https://youtube.com/shorts/Ip83_2qw9m0?feature=share)
 
-    [![IMAGE ALT TEXT HERE](filtro por region)](https://youtube.com/shorts/mgIgroBtAos?feature=share)
+<br><br>iltro por region)](https://youtube.com/shorts/mgIgroBtAos?feature=share)
