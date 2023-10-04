@@ -60,4 +60,8 @@ Filtro por región y detalle de Pókemon
 
 [![Filtro por región](https://img.youtube.com/vi/Ip83_2qw9m0/0.jpg)](https://youtube.com/shorts/Ip83_2qw9m0?feature=share)
 
-<br><br>iltro por region)](https://youtube.com/shorts/mgIgroBtAos?feature=share)
+<br><br>
+
+Búsqueda  por nombre o número de Pokedex de Pokémon
+
+[![Búsqueda de Pokémon](https://img.youtube.com/vi/mgIgroBtAos/0.jpg)](https://youtube.com/shorts/mgIgroBtAos?feature=share) 
