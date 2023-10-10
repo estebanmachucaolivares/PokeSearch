@@ -36,21 +36,15 @@ Splash Screen
 
 <br><br>
 
-Listado de Pokemones Agrupado por Regiones
+Listado de pokemones agrupado por regiones
 
-<img src="img/kanto.jpg" alt="kanto" style="height:600px;"> <img src="img/Jotho.jpg" alt="kanto" style="height:600px;"> <img src="img/hoenn.jpg" alt="kanto" style="height:600px;">  
-
-<br><br>
-
-Detalles de Pokémon - Imagen, tipo, descripción y cadena evolutiva de Pokémon
-
-<img src="img/detalle-1.jpg" alt="detalle 1" style="height:600px;"> 
+<img src="img/generation-preview.png" alt="generaciones" style="height:600px;">
 
 <br><br>
 
-Detalles de Pokémon - Estadísticas y habilidades
+Busqueda de Pókemon, detalles de Pokémon - imagen, tipo, descripción, cadena evolutiva, estadísticas y habilidades.
 
-<img src="img/detalle-2.jpg" alt="detalle 2" style="height:600px;"> 
+<img src="img/detail-preview.png" alt="detalle" style="height:600px;"> 
 
 <br><br>
 
