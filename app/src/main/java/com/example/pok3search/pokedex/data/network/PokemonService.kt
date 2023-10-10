@@ -60,72 +60,31 @@ class PokemonService @Inject constructor(private val pokemonClient:PokemonClient
         return DescriptionResponse(pokemonId,pokemonType,pokemonDescription)
     }
 
-    suspend fun getEvolutionChainForPokemon(pokemonId: Int):List<PokemonEvolutionResponse> = withContext(Dispatchers.IO){
-
-        val evolutionUrl = pokemonClient.getPokemonEvolutionChainUrl(pokemonId)
-        val call = pokemonClient.getPokemonEvolutionChain(evolutionUrl.evolution_chain.url)
-
+    suspend fun getEvolutionChainForPokemon(pokemonId: Int): List<PokemonEvolutionResponse> = withContext(Dispatchers.IO) {
         try {
+            val evolutionUrl = pokemonClient.getPokemonEvolutionChainUrl(pokemonId)
+            val call = pokemonClient.getPokemonEvolutionChain(evolutionUrl.evolution_chain.url)
             val response = call.execute()
-            if (response.isSuccessful) {
-                val evolutionChain = response.body()
-                val evolutionNames = mutableListOf<PokemonEvolutionResponse>()
 
-                if (evolutionChain != null) {
-                    val pokemonId = getPokemonIdForUrl(evolutionChain.chain.species.url)
-                    evolutionNames.add(PokemonEvolutionResponse(PokemonWithIdResponse(pokemonId, evolutionChain.chain.species.name),1))
-
-                    if (evolutionChain.chain.evolves_to.isNotEmpty()) {
-
-                        for (evolution_1 in evolutionChain.chain.evolves_to) {
-
-                            evolutionNames.add(
-                                PokemonEvolutionResponse(
-                                    PokemonWithIdResponse(
-                                        getPokemonIdForUrl(evolution_1.species.url),
-                                        evolution_1.species.name
-                                    ), 2
-                                )
-                            )
-
-                            if (evolution_1.evolves_to.isNotEmpty()) {
-                                for (evolution_2 in evolution_1.evolves_to){
-
-                                    evolutionNames.add(
-                                        PokemonEvolutionResponse(
-                                            PokemonWithIdResponse(
-                                                getPokemonIdForUrl(evolution_2.species.url),
-                                                evolution_2.species.name
-                                            ),
-                                            3
-                                        )
-                                    )
-
-                                    if (evolution_2.evolves_to.isNotEmpty()){
-                                        for (evolution_3 in evolution_2.evolves_to){
-                                            evolutionNames.add(
-                                                PokemonEvolutionResponse(
-                                                    PokemonWithIdResponse(
-                                                        getPokemonIdForUrl(evolution_3.species.url),
-                                                        evolution_3.species.name
-                                                    ),
-                                                    4
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                evolutionNames
-            } else {
-                // Manejar el caso en el que la solicitud no sea exitosa
-                emptyList()
+            if (!response.isSuccessful) {
+                return@withContext emptyList()
             }
+
+            val evolutionChain = response.body() ?: return@withContext emptyList()
+            val evolutionNames = mutableListOf<PokemonEvolutionResponse>()
+
+            fun collectEvolutions(evolution: Evolution, level: Int) {
+                val pokemonId = getPokemonIdForUrl(evolution.species.url)
+                evolutionNames.add(PokemonEvolutionResponse(PokemonWithIdResponse(pokemonId, evolution.species.name), level))
+
+                for (subEvolution in evolution.evolves_to) {
+                    collectEvolutions(subEvolution, level + 1)
+                }
+            }
+
+            collectEvolutions(Evolution(evolutionChain.chain.evolves_to,evolutionChain.chain.species), 1)
+            evolutionNames
         } catch (e: Exception) {
-            // Manejar el caso en el que haya un error en la solicitud
             emptyList()
         }
     }
