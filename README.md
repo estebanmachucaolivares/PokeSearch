@@ -32,7 +32,7 @@
 
 Splash Screen
 
-<img src="img/SplashScreen.jpeg" alt="splash" style="height:600px;"> 
+<img src="img/SplashScreen.png" alt="splash" style="height:600px;"> 
 
 <br><br>
 
