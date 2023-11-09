@@ -4,7 +4,9 @@ import com.example.pok3search.pokedex.domain.datasource.RemoteDataSource
 import com.example.pok3search.pokedex.domain.model.*
 import javax.inject.Inject
 
-class RemoteDataSourceImpl @Inject constructor(private val api: PokemonService) : RemoteDataSource {
+class RemoteDataSourceImpl
+@Inject constructor(private val api: PokemonService)
+    : RemoteDataSource {
 
     override suspend fun getAllPokemonWithRegion(): List<PokemonGroupByRegion> {
         return api.getAllPokemonWithRegion().map {
@@ -18,7 +20,7 @@ class RemoteDataSourceImpl @Inject constructor(private val api: PokemonService) 
         return api.getPokemonDetails(pokemonId).toDomain()
     }
 
-    override suspend fun getEvolutionChainForPokemon(pokemonId: Int): List<PokemonEvolutionChain> {
+    override suspend fun getPokemonEvolutionChain(pokemonId: Int): List<PokemonEvolutionChain> {
         val res = api.getEvolutionChainForPokemon(pokemonId)
         return res.map {PokemonEvolutionChain(it.pokemonResponse.toDomain(),it.level) }
     }

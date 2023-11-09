@@ -1,11 +1,9 @@
 package com.example.pok3search.pokedex.data.database
 
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
 import com.example.pok3search.pokedex.data.database.dao.*
 import com.example.pok3search.pokedex.data.database.entities.PokemonEvolutionEntity
 import com.example.pok3search.pokedex.data.database.entities.PokemonTypeCrossRef
-import com.example.pok3search.pokedex.data.database.entities.RegionWithPokemon
 import com.example.pok3search.pokedex.data.database.entities.toEntity
 import com.example.pok3search.pokedex.domain.datasource.LocalDataSource
 import com.example.pok3search.pokedex.domain.model.*
@@ -89,7 +87,7 @@ class LocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPokemonType(pokemonId: Int): List<PokemonTypes> {
+    override suspend fun getPokemonTypes(pokemonId: Int): List<PokemonTypes> {
         return typeDao.getTypesForPokemon(pokemonId.toLong()).map { it.toDomain() }
     }
 
@@ -111,7 +109,7 @@ class LocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPokemonEvolution(pokemonId: Int): List<PokemonEvolutionChain> {
+    override suspend fun getPokemonEvolutionChain(pokemonId: Int): List<PokemonEvolutionChain> {
         val pokemonEvolutionChain = mutableListOf<PokemonEvolutionChain>()
         val res =  pokemonEvolutionDao.getPokemonEvolution(pokemonId)
         res.forEach{
@@ -147,7 +145,7 @@ class LocalDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPokemonAbility(pokemonId: Int): List<PokemonAbility> {
+    override suspend fun getPokemonAbilities(pokemonId: Int): List<PokemonAbility> {
         return pokemonAbilityDao.getPokemonAbility(pokemonId).map { it.toDomain() }
     }
 }
